@@ -1,8 +1,6 @@
-package org.example.board
+package chess.board
 
-import org.example.board.Piece
 import java.lang.StringBuilder
-import org.example.board.Piece.pieceColor
 
 class Board {
 
@@ -24,32 +22,32 @@ class Board {
     }
 
     init {
-        var color = pieceColor.WHITE
+        var color = PieceColor.WHITE
         var i = 0
         while (i < 8) {
             for (j in 0..7) { //pawns
                 if (i == 0) {
-                    board[i + 1][j] = Piece(Piece.pieceType.PAWN, color)
+                    board[i + 1][j] = Piece(PieceType.PAWN, color)
                 } else {
-                    board[i - 1][j] = Piece(Piece.pieceType.PAWN, color)
+                    board[i - 1][j] = Piece(PieceType.PAWN, color)
                 }
             }
             //rooks
-            board[i][0] = Piece(Piece.pieceType.ROOK, color)
-            board[i][7] = Piece(Piece.pieceType.ROOK, color)
+            board[i][0] = Piece(PieceType.ROOK, color)
+            board[i][7] = Piece(PieceType.ROOK, color)
 
             //knights
-            board[i][1] = Piece(Piece.pieceType.KNIGHT, color)
-            board[i][6] = Piece(Piece.pieceType.KNIGHT, color)
+            board[i][1] = Piece(PieceType.KNIGHT, color)
+            board[i][6] = Piece(PieceType.KNIGHT, color)
 
             //bishops
-            board[i][2] = Piece(Piece.pieceType.BISHOP, color)
-            board[i][5] = Piece(Piece.pieceType.BISHOP, color)
+            board[i][2] = Piece(PieceType.BISHOP, color)
+            board[i][5] = Piece(PieceType.BISHOP, color)
 
             //royalty
-            board[i][3] = Piece(Piece.pieceType.QUEEN, color)
-            board[i][4] = Piece(Piece.pieceType.KING, color)
-            color = pieceColor.BLACK
+            board[i][3] = Piece(PieceType.QUEEN, color)
+            board[i][4] = Piece(PieceType.KING, color)
+            color = PieceColor.BLACK
             i += 7
         }
     }

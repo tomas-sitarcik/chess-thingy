@@ -1,6 +1,6 @@
-package com.example.demo.view
+package chess.view
 
-import com.example.demo.app.Styles
+import chess.app.Styles
 import tornadofx.*
 import tornadofx.Stylesheet.Companion.label
 
