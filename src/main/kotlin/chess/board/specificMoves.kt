@@ -31,9 +31,23 @@ fun pawnMoves(piece: Piece, board: Array<Array<Piece?>>): Array<IntArray> {
 fun getMovesFromHorizontalDistances(position: IntArray, board: Array<Array<Piece?>>, distances: IntArray): Array<IntArray>? {
     //generates a list of legal moves according to the horizontal distances
 
+    val moves = ArrayList<IntArray>(10)
     if (distances[0] != 0) {
-        for (i in position[1]..distances[0]) {
+        for (y in distances[0] - 1..position[1]) { // up
+            if (board[position[0]][y] == null) {
+                moves.add(intArrayOf(0, y))
+            } else if (board[position[0]][y] != null) {
+                moves.add(intArrayOf(0, y))
+            }
+        }
+    }
 
+    if (distances[1] != 0) {
+        for (x in position[0] + 1..distances[1]) { // right            if (board[x][position[1]] == null) {
+                moves.add(intArrayOf(0, x))
+            } else if (board[x][position[1]] != null) {
+                moves.add(intArrayOf(0, x))
+            }
         }
     }
 
