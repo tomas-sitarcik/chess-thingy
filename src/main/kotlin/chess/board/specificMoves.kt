@@ -4,58 +4,152 @@ package chess.board
 // legal moves returned will also include capture moves, another method outside of this will take care of
 // capture logic, because of the exception that are checks
 
-fun kingMoves(piece: Piece, board: Array<Array<Piece?>>): Array<IntArray> {
+fun kingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<IntArray> {
     TODO("Not yet implemented")
 }
 
-fun queenMoves(piece: Piece, board: Array<Array<Piece?>>): Array<IntArray> {
+fun queenMoves(position: IntArray, board: Array<Array<Piece?>>): Array<IntArray> {
     TODO("Not yet implemented")
 }
 
-fun bishopMoves(piece: Piece, board: Array<Array<Piece?>>): Array<IntArray> {
+fun bishopMoves(position: IntArray, board: Array<Array<Piece?>>): Array<IntArray> {
     TODO("Not yet implemented")
 }
 
-fun knightMoves(piece: Piece, board: Array<Array<Piece?>>): Array<IntArray> {
+fun knightMoves(position: IntArray, board: Array<Array<Piece?>>): Array<IntArray> {
     TODO("Not yet implemented")
 }
 
-fun rookMoves(piece: Piece, board: Array<Array<Piece?>>): Array<IntArray> {
+fun rookMoves(position: IntArray, board: Array<Array<Piece?>>): Array<IntArray> {
     TODO("Not yet implemented")
 }
 
-fun pawnMoves(piece: Piece, board: Array<Array<Piece?>>): Array<IntArray> {
+fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>): Array<IntArray> {
     TODO("Not yet implemented")
 }
 
-fun getMovesFromHorizontalDistances(position: IntArray, board: Array<Array<Piece?>>, distances: IntArray): Array<IntArray>? {
+fun getMovesFromHorizontalDistances(position: IntArray, board: Array<Array<Piece?>>): Array<IntArray>? {
     //generates a list of legal moves according to the horizontal distances
 
-    val moves = ArrayList<IntArray>(10)
+    val distances = getHorizontalDistances(position)
+    val moves = ArrayList<IntArray>(14)
+    var pos: Int
+    var add: Boolean
+
     if (distances[0] != 0) {
-        for (y in distances[0] - 1..position[1]) { // up
-            if (board[position[0]][y] == null) {
-                moves.add(intArrayOf(0, y))
-            } else if (board[position[0]][y] != null) {
-                moves.add(intArrayOf(0, y))
+        pos = position[0]
+        for (y in position[1] - 1 downTo 0) { // up
+            add = moves.add(intArrayOf(pos, y))
+            if (board[pos][y] == null) {
+                add
+            } else {
+                add
+                break
             }
         }
     }
 
     if (distances[1] != 0) {
-        for (x in position[0] + 1..distances[1]) { // right            if (board[x][position[1]] == null) {
-                moves.add(intArrayOf(0, x))
-            } else if (board[x][position[1]] != null) {
-                moves.add(intArrayOf(0, x))
+        pos = position[1]
+        for (x in position[0] + 1 .. 7) { // right
+            add = moves.add(intArrayOf(pos, x))
+            if (board[x][pos] == null) {
+                add
+            } else {
+                add
+                break
             }
         }
     }
 
+    if (distances[2] != 0) {
+        pos = position[0]
+        for (y in position[1] + 1 .. 7 ) { // down
+            add = moves.add(intArrayOf(pos, y))
+            if (board[pos][y] == null) {
+                add
+            } else {
+                add
+                break
+            }
+        }
+    }
 
+    if (distances[3] != 0) {
+        pos = position[1]
+        for (x in position[0] - 1 downTo 0) { // left
+            add = moves.add(intArrayOf(pos, x))
+            if (board[x][pos] == null) {
+                add
+            } else {
+                add
+                break
+            }
+        }
+    }
+
+    return moves.toTypedArray()
 }
 
-fun getMovesFromDiagonalDistances( position: IntArray, board: Array<Array<Piece?>>, diagonalDistances: IntArray): Array<IntArray>? {
-    TODO("Not yet implemented")
+fun getMovesFromDiagonalDistances( position: IntArray, board: Array<Array<Piece?>>): Array<IntArray>? {
     //generates a list of legal moves according to the diagonal distances
+
+    val distances = getDiagonalDistances(position)
+    val moves = ArrayList<IntArray>(14)
+    var pos: Int
+    var add: Boolean
+    var x = position[0]
+    var y = position[1]
+
+
+    if (distances[0] != 0) {
+        for (d in 1 .. distances[0]){
+            add = moves.add(intArrayOf(x + d, y - d))
+            if (board[x + d][y - d] == null) {
+                add
+            } else {
+                add
+                break
+            }
+        }
+    }
+
+    if (distances[1] != 0) {
+        for (d in 1 .. distances[1]){
+            add = moves.add(intArrayOf(x + d, y + d))
+            if (board[x + d][y + d] == null) {
+                add
+            } else {
+                add
+                break
+            }
+        }
+    }
+
+    if (distances[2] != 0) {
+        for (d in 1 .. distances[2]){
+            add = moves.add(intArrayOf(x - d, y + d))
+            if (board[x - d][y + d] == null) {
+                add
+            } else {
+                add
+                break
+            }
+        }
+    }
+
+    if (distances[3] != 0) {
+        for (d in 1 .. distances[3]){
+            add = moves.add(intArrayOf(x - d, y - d))
+            if (board[x - d][y - d] == null) {
+                add
+            } else {
+                add
+                break
+            }
+        }
+    }
+
+    return moves.toTypedArray()
 }
 
