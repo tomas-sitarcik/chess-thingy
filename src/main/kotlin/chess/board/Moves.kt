@@ -21,7 +21,7 @@ fun getDiagonalDistances(position: IntArray): IntArray {
     return diagonalDistances
 }
 
-fun getPossibleMoves(position: IntArray, board: Array<Array<Piece?>>): Array<IntArray>? {
+fun getPossibleMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
     val piece = board[position[0]][position[1]]
     when (piece?.type) {
             PAWN -> return pawnMoves(position, board)
@@ -31,5 +31,5 @@ fun getPossibleMoves(position: IntArray, board: Array<Array<Piece?>>): Array<Int
             QUEEN -> return queenMoves(position, board)
             KING -> return kingMoves(position, board)
         }
-    return null
+    return arrayOf(intArrayOf())
     }
