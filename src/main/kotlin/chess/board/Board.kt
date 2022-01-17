@@ -2,40 +2,40 @@ package chess.board
 
 import java.lang.StringBuilder
 
-fun boardString(board: Array<Array<Piece?>>): String {
-    val consoleBoard = StringBuilder()
-
-    // works kinda funky but allows access of the pieces with board[x][y] as opposed to having to use board[y][x]
-    // there is probably a better more elegant way to do this... TOO BAD!
+fun getConsoleBoard(board: Array<Array<Piece?>>): Array<Array<String>> {
+    val consoleBoard = Array(8) { Array(8) { "" } }
     for (i in 0..7) {
         for (j in 0..7) {
+            val squareString = StringBuilder()
             if (board[j][i] != null) {
-                consoleBoard.append("[").append(board[j][i]?.type?.name, 0, 2)
-                consoleBoard.append(board[j][i]?.color?.name, 0, 2).append("] ")
+                squareString.append("[").append(board[j][i]?.type?.name, 0, 2)
+                squareString.append(board[j][i]?.color?.name,  0, 2).append("]")
             } else {
-                consoleBoard.append("[----] ")
+                squareString.append("[----]")
             }
+            consoleBoard[i][j] = squareString.toString()
         }
-        consoleBoard.append("\n")
     }
-
-    // old bad and smelly code
-    /*for (row in board) {
-        for (piece in row) {
-            if (piece != null) {
-                consoleBoard.append("[").append(piece.type.name, 0, 2)
-                consoleBoard.append(piece.color.name, 0, 2).append("] ")
-            } else {
-                consoleBoard.append("[----] ")
-            }
-        }
-    }*/
-
-    return consoleBoard.toString()
+    return consoleBoard
 }
 
+fun getPrintableBoard(consoleBoard: Array<Array<String>>): String {
+    val printableBoard = StringBuilder()
+    for (row in consoleBoard) {
+        for (square in row) {
+            printableBoard.append(square)
+            printableBoard.append(" ")
+        }
+        printableBoard.append("\n")
+    }
+    return printableBoard.toString()
+}
+
+// works kinda funky but allows more intuitive access of the pieces with board[x][y] as opposed to having
+// to use board[y][x] there is probably a better, more elegant way to do this... TOO BAD!
+
 fun initBoard(): Array<Array<Piece?>> {
-    var board = Array(8) { Array<Piece?>(8) { i -> null } }
+    val board = Array(8) { Array<Piece?>(8) { null } }
     var color = PieceColor.WHITE
     var i = 0
     while (i < 8) {

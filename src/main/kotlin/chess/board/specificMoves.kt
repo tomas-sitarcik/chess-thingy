@@ -7,8 +7,8 @@ import chess.board.PieceColor.*
 // capture logic, because of the exception that are checks and en passants
 
 fun kingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
-    return getMovesFromHorizontalDistances(position, board, 1)?.
-    plus(getMovesFromDiagonalDistances(position, board, 1))
+    return getMovesFromHorizontalDistances(position, board)?.
+    plus(getMovesFromDiagonalDistances(position, board))
 }
 
 fun queenMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
@@ -144,22 +144,13 @@ fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArr
 //generates a list of legal moves according to the horizontal distances
 fun getMovesFromHorizontalDistances(
     position: IntArray,
-    board: Array<Array<Piece?>>,
-    depth: Int = 0):
+    board: Array<Array<Piece?>>):
         Array<IntArray>? {
 
     val distances = getHorizontalDistances(position)
     val moves = ArrayList<IntArray>(14)
     var pos: Int
     var add: Boolean
-
-    if (depth > 0) {
-        for (i in 0 until 4) {
-            if (distances[i] > depth) {
-                distances[i] = depth
-            }
-        }
-    }
 
     // up
     if (distances[0] != 0) {
@@ -223,25 +214,15 @@ fun getMovesFromHorizontalDistances(
 //generates a list of legal moves according to the diagonal distances
 fun getMovesFromDiagonalDistances(
     position: IntArray,
-    board: Array<Array<Piece?>>,
-    depth: Int = 0):
+    board: Array<Array<Piece?>>):
         Array<out IntArray> {
 
 
     val distances = getDiagonalDistances(position)
     val moves = ArrayList<IntArray>(14)
-    var pos: Int
     var add: Boolean
     var x = position[0]
     var y = position[1]
-
-    if (depth > 0) {
-        for (i in 0 until 4) {
-            if (distances[i] != 0) {
-                distances[i] = depth
-            }
-        }
-    }
 
     // top right
     if (distances[0] != 0) {
@@ -294,7 +275,6 @@ fun getMovesFromDiagonalDistances(
             }
         }
     }
-
     return moves.toTypedArray()
 }
 
