@@ -29,15 +29,19 @@ fun main(args: Array<String>) {
     }
 
     var board = initBoard()
-    board[1][2] = Piece(PieceType.ROOK, PieceColor.WHITE)
-    println(getPrintableBoard(getConsoleBoard(board)))
+    board[2][5] = Piece(PieceType.ROOK, PieceColor.WHITE)
+    board[3][5] = Piece(PieceType.ROOK, PieceColor.WHITE)
+    board[4][5] = Piece(PieceType.ROOK, PieceColor.WHITE)
+    //println(getPrintableBoard(getConsoleBoard(board)))
     //printMoves(rookMoves(intArrayOf(1, 2), board))
     //printMoves(bishopMoves(intArrayOf(1, 3), board))
-    printMoves(bishopMoves(intArrayOf(3, 3), board))
+    //printMoves(bishopMoves(intArrayOf(3, 3), board))
 
     var consBoard = getConsoleBoard(board)
     println(getPrintableBoard(consBoard))
-    visualizeMoves(consBoard, kingMoves(intArrayOf(3, 3), board))
+    //visualizeMoves(consBoard, pawnMoves(intArrayOf(3, 6), board, PieceColor.BLACK))
+    printMoves(knightMoves(intArrayOf(4, 7), board))
+    visualizeMoves(consBoard, knightMoves(intArrayOf(6, 7), board))
     println(getPrintableBoard(consBoard))
 
 }

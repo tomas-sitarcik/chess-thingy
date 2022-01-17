@@ -64,58 +64,56 @@ fun knightMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntA
     val moves = ArrayList<IntArray>(8)
     var temp: IntArray
 
-    for (i in 0 until 4) {
-        if (distances[i] < 2) {
-            distances[i] = 0
-        }
-    }
-
     // top
-    if (distances[0] != 0) {
-        temp = intArrayOf(distances[0] + 1, distances[1] - 2)
-        if (board[temp[0]][temp[1]] == null) {
-            moves.add(temp)
+    if (distances[0] >= 2) {
+
+        if (distances[1] > 0) {
+            moves.add(intArrayOf(position[0] + 1, position[1] - 2))
         }
-        temp = intArrayOf(distances[0] - 1, distances[1] - 2)
-        if (board[temp[0]][temp[1]] == null) {
-            moves.add(temp)
+
+        if (distances[3] > 0) {
+            moves.add(intArrayOf(position[0] - 1, position[1] - 2))
         }
+
     }
 
     // right
-    if (distances[0] != 0) {
-        temp = intArrayOf(distances[0] + 2, distances[1] - 1)
-        if (board[temp[0]][temp[1]] == null) {
-            moves.add(temp)
+    if (distances[1] >= 2) {
+
+        if (distances[0] > 0) {
+            moves.add(intArrayOf(position[0] + 2, position[1] - 1))
         }
-        temp = intArrayOf(distances[0] + 2, distances[1] + 1)
-        if (board[temp[0]][temp[1]] == null) {
-            moves.add(temp)
+
+        if (distances[2] > 0) {
+            moves.add(intArrayOf(position[0] + 2, position[1] + 1))
         }
+
     }
 
     // down
-    if (distances[0] != 0) {
-        temp = intArrayOf(distances[0] + 1, distances[1] + 2)
-        if (board[temp[0]][temp[1]] == null) {
-            moves.add(temp)
+    if (distances[2] >= 2) {
+
+        if (distances[1] > 0) {
+            moves.add(intArrayOf(position[0] + 1, position[1] + 2))
         }
-        temp = intArrayOf(distances[0] - 1, distances[1] + 2)
-        if (board[temp[0]][temp[1]] == null) {
-            moves.add(temp)
+
+        if (distances[3] > 0) {
+            moves.add(intArrayOf(position[0] - 1, position[1] + 2))
         }
+
     }
 
     // left
-    if (distances[0] != 0) {
-        temp = intArrayOf(distances[0] - 2, distances[1] - 1)
-        if (board[temp[0]][temp[1]] == null) {
-            moves.add(temp)
+    if (distances[3] >= 2) {
+
+        if (distances[0] > 0) {
+            moves.add(intArrayOf(position[0] - 2, position[1] - 1))
         }
-        temp = intArrayOf(distances[0] - 2, distances[1] + 1)
-        if (board[temp[0]][temp[1]] == null) {
-            moves.add(temp)
+
+        if (distances[2] > 0) {
+            moves.add(intArrayOf(position[0] - 2, position[1] + 1))
         }
+
     }
 
     return moves.toTypedArray()
@@ -127,14 +125,13 @@ fun rookMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArr
 }
 
 // en passant capturing not handled here :D
-fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
-    val pawnColor = board[position[0]][position[1]]?.color
+fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>, color: PieceColor): Array<out IntArray>? {
     val moves = ArrayList<IntArray>(4)
     val x = position[0]
     val y = position[1]
 
     // double move
-    if (pawnColor == WHITE) {
+    if (color == WHITE) {
         if (y < 7) {
             if (board[x][y + 1] == null) {
                 moves.add(intArrayOf(x, y + 1))
@@ -155,7 +152,7 @@ fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArr
     }
 
     // captures
-    if (pawnColor == WHITE) {
+    if (color == WHITE) {
         if (y < 7){
             if (board[x + 1][y + 1] != null){
                 moves.add(intArrayOf(x + 1, y + 1))

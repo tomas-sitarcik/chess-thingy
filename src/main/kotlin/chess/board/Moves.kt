@@ -24,7 +24,7 @@ fun getDiagonalDistances(position: IntArray): IntArray {
 fun getPossibleMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
     val piece = board[position[0]][position[1]]
     when (piece?.type) {
-            PAWN -> return pawnMoves(position, board)
+            PAWN -> return pawnMoves(position, board, piece.color)
             ROOK -> return rookMoves(position, board)
             KNIGHT -> return knightMoves(position, board)
             BISHOP -> return bishopMoves(position, board)
