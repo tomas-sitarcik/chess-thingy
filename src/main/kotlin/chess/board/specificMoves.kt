@@ -7,8 +7,46 @@ import chess.board.PieceColor.*
 // capture logic, because of the exception that are checks and en passants
 
 fun kingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
-    return getMovesFromHorizontalDistances(position, board)?.
-    plus(getMovesFromDiagonalDistances(position, board))
+    val horizontalDistances = getHorizontalDistances(position)
+    val diagonalDistances = getDiagonalDistances(position)
+    val moves = ArrayList<IntArray>(8)
+    val x = position[0]
+    val y = position[1]
+
+    if (horizontalDistances[0] > 0) { // up
+        moves.add(intArrayOf(x, y - 1))
+    }
+
+    if (horizontalDistances[1] > 0) { // right
+        moves.add(intArrayOf(x + 1, y ))
+    }
+
+    if (horizontalDistances[2] > 0) { // down
+        moves.add(intArrayOf(x, y + 1))
+    }
+
+    if (horizontalDistances[3] > 0) { // left
+        moves.add(intArrayOf(x - 1, y))
+    }
+
+
+    if (horizontalDistances[0] > 0) { // top right
+        moves.add(intArrayOf(x + 1, y - 1))
+    }
+
+    if (horizontalDistances[1] > 0) { // bottom right
+        moves.add(intArrayOf(x + 1, y + 1))
+    }
+
+    if (horizontalDistances[2] > 0) { // bottom left
+        moves.add(intArrayOf(x - 1, y + 1))
+    }
+
+    if (horizontalDistances[3] > 0) { // top left
+        moves.add(intArrayOf(x - 1, y - 1))
+    }
+
+    return moves.toTypedArray()
 }
 
 fun queenMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
