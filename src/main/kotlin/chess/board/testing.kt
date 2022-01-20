@@ -1,5 +1,7 @@
 package chess.board
 
+import chess.board.SpecificMovesKtTest
+
 fun main(args: Array<String>) {
 
     fun printMoves(moves: Array<out IntArray>?) {
@@ -40,8 +42,12 @@ fun main(args: Array<String>) {
     var consBoard = getConsoleBoard(board)
     println(getPrintableBoard(consBoard))
     //visualizeMoves(consBoard, pawnMoves(intArrayOf(3, 6), board, PieceColor.BLACK))
-    printMoves(knightMoves(intArrayOf(4, 7), board))
+    //printMoves(knightMoves(intArrayOf(4, 7), board))
     visualizeMoves(consBoard, knightMoves(intArrayOf(6, 7), board))
     println(getPrintableBoard(consBoard))
+
+    val test = SpecificMovesKtTest()
+
+    print(test.moveSort(pawnMoves(intArrayOf(3, 6), board, PieceColor.WHITE)))
 
 }

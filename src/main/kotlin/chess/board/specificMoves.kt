@@ -30,19 +30,19 @@ fun kingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArr
     }
 
 
-    if (horizontalDistances[0] > 0) { // top right
+    if (diagonalDistances[0] > 0) { // top right
         moves.add(intArrayOf(x + 1, y - 1))
     }
 
-    if (horizontalDistances[1] > 0) { // bottom right
+    if (diagonalDistances[1] > 0) { // bottom right
         moves.add(intArrayOf(x + 1, y + 1))
     }
 
-    if (horizontalDistances[2] > 0) { // bottom left
+    if (diagonalDistances[2] > 0) { // bottom left
         moves.add(intArrayOf(x - 1, y + 1))
     }
 
-    if (horizontalDistances[3] > 0) { // top left
+    if (diagonalDistances[3] > 0) { // top left
         moves.add(intArrayOf(x - 1, y - 1))
     }
 

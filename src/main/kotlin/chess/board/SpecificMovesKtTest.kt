@@ -6,13 +6,28 @@ internal class SpecificMovesKtTest {
 
     //TODO later
 
-    fun moveSort() {
+    fun moveSort(moves: Array<out IntArray>?) {
 
+        fun auxSort(moves: Array<out IntArray>?, lo: Int, hi: Int) {
+
+        }
+
+        fun compare(moveA: IntArray, moveB: IntArray) {
+            for (i in 0 .. moveA.size) {
+                if
+            }
+        }
+
+        return auxSort(moves, 0, moves!!.size - 1)
+
+        // return moves?.contentDeepEquals(moves)
     }
 
     @org.junit.jupiter.api.Test
     fun kingMoves() {
     }
+
+
 
     @org.junit.jupiter.api.Test
     fun queenMoves() {
