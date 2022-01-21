@@ -2,6 +2,19 @@ package chess.board
 
 import java.lang.StringBuilder
 
+/**
+ * DONT FORGET
+ * [ROOK, PAWN, ----, ----, ----, ----, PAWN, ROOK]
+ * [KNIGHT, PAWN, ----, ----, ----, ----, PAWN, KNIGHT]
+ * [BISHOP, PAWN, ----, ----, ----, ----, PAWN, BISHOP]
+ * [QUEEN, PAWN, ----, ----, ----, ----, PAWN, KING]
+ * [KING, PAWN, ----, ----, ----, ----, PAWN, QUEEN]
+ * [BISHOP, PAWN, ----, ----, ----, ----, PAWN, BISHOP]
+ * [KNIGHT, PAWN, ----, ----, ----, ----, PAWN, KNIGHT]
+ * [ROOK, PAWN, ----, ----, ----, ----, PAWN, ROOK]
+ * THIS IS THE REAL SHAPE
+ */
+
 fun getConsoleBoard(board: Array<Array<Piece?>>): Array<Array<String>> {
     val consoleBoard = Array(8) { Array(8) { "" } }
     for (i in 0..7) {

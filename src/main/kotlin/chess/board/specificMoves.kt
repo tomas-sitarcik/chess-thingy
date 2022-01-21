@@ -2,9 +2,12 @@ package chess.board
 
 import chess.board.PieceColor.*
 
-// [[x1,y1], [x2, y2], ...]
-// legal moves returned will also include capture moves, another method outside of this will take care of
-// capture logic, because of the exception that are checks and en passants
+/**
+ * [[x1,y1], [x2, y2], ...]
+ * legal moves returned will also include capture moves
+ * another method outside of this will take care of
+ * capture logic, because of the exception that are checks and en passants (fun)
+ */
 
 fun kingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
     val horizontalDistances = getHorizontalDistances(position)
@@ -124,7 +127,7 @@ fun rookMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArr
     return getMovesFromHorizontalDistances(position, board)
 }
 
-// en passant capturing not handled here :D
+//en passant capturing not handled here :D
 fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>, color: PieceColor): Array<out IntArray>? {
     val moves = ArrayList<IntArray>(4)
     val x = position[0]
