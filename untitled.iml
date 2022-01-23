@@ -6,8 +6,8 @@
         <compilerSettings />
         <compilerArguments>
           <option name="jvmTarget" value="1.8" />
-          <option name="languageVersion" value="1.5" />
-          <option name="apiVersion" value="1.5" />
+          <option name="languageVersion" value="1.2" />
+          <option name="apiVersion" value="1.2" />
           <option name="pluginOptions">
             <array />
           </option>
@@ -17,6 +17,7 @@
           <option name="errors">
             <ArgumentParseErrors />
           </option>
+          <option name="coroutinesWarn" value="true" />
         </compilerArguments>
       </configuration>
     </facet>
@@ -34,6 +35,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="io.github.microutils:kotlin-logging-jvm:2.0.6" level="project" />
     <orderEntry type="library" name="Maven: no.tornado:tornadofx:1.7.17" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish:javax.json:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: javax.json:javax.json-api:1.1.2" level="project" />
@@ -43,8 +45,6 @@
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.2.60" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.2.60" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test:1.2.60" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test-common:1.2.60" level="project" />
     <orderEntry type="library" name="Maven: org.junit.jupiter:junit-jupiter:5.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.junit.jupiter:junit-jupiter-api:5.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
@@ -55,6 +55,5 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.junit.platform:junit-platform-engine:1.8.2" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.13.2" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
-    <orderEntry type="library" name="io.github.microutils:kotlin-logging-jvm:2.0.6" level="project" />
   </component>
 </module>

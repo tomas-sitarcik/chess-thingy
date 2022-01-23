@@ -1,14 +1,6 @@
 package chess.board
 
-//import com.sun.org.slf4j.internal.Logger
-//import com.sun.org.slf4j.internal.LoggerFactory
-import mu.KotlinLogging
-import org.slf4j.LoggerFactory
-
-
 fun main(args: Array<String>) {
-
-    val logger = KotlinLogging.logger {}
 
     fun printMoves(moves: Array<out IntArray>?) {
         if (moves != null) {
@@ -36,15 +28,16 @@ fun main(args: Array<String>) {
         print("\n")
     }
 
-    fun visualizeMoves(position: IntArray, board: Array<Array<Piece?>>): Unit? {
+    fun printMoves(position: IntArray, board: Array<Array<Piece?>>): Unit? {
         val moves = getPossibleMoves(position, board)
         if (moves == null) {
-            logger.trace ("Visuallization of moves failed" )
-                return null
+            print("failed")
+            return null
             }
-        var consBoard = getConsoleBoard(board)
+
+        val consBoard = getConsoleBoard(board)
         println(getPrintableBoard(consBoard))
-        printMoves(moves)
+        //printMoves(moves)
         visualizeMoves(consBoard, moves)
         println(getPrintableBoard(consBoard))
         return null
@@ -87,7 +80,6 @@ fun main(args: Array<String>) {
 
 
     move(intArrayOf(3, 7), intArrayOf(3, 3), board)
-    visualizeMoves(intArrayOf(3, 4), board)
-
+    printMoves(intArrayOf(3, 3), board)
 
 }
