@@ -57,7 +57,7 @@ fun queenMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntAr
     plus(getMovesFromDiagonalDistances(position, board))
 }
 
-fun bishopMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray> {
+fun bishopMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
     return getMovesFromDiagonalDistances(position, board)
 }
 
