@@ -6,6 +6,7 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.BorderPane
+import javafx.scene.layout.Pane
 import javafx.scene.paint.Color.*
 import tornadofx.*
 import tornadofx.Controller
@@ -13,12 +14,14 @@ import java.io.File
 import java.lang.Thread.sleep
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.round
 
 class MainView : View() {
     override val root : AnchorPane by fxml("/MainView.fxml")
     private val anchor : AnchorPane by fxid("anchor")
     private val boardBackground : Canvas by fxid("boardBackground")
+    private val boardForeground : Canvas by fxid("boardForeground")
 
     init {
 
@@ -28,33 +31,49 @@ class MainView : View() {
         //currentStage?.width = 800.0
         //currentStage?.height = 639.0
 
-        boardBackground.height = 500.0
-        boardBackground.width = 500.0
+        //boardBackground.height = 500.0
+        //boardBackground.width = 500.0
 
         anchor.heightProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, old: Number, new: Number ->
             old as Double
             new as Double
 
-
+            scaleCanvas(boardBackground)
         })
 
         anchor.widthProperty().addListener(ChangeListener{
             _: ObservableValue<out Number>?, old: Number, new: Number ->
             old as Double
             new as Double
+
+            scaleCanvas(boardBackground)
         })
 
         drawBoard()
 
     }
 
-    private fun scaleBoardBackground(oldX: Double = -1.0 , newX: Double = -1.0, oldY: Double = -1.0, newY: Double = -1.0) {
+    private fun scaleCanvas(canvas: Canvas) {
 
-        val xRatio: Double = 5.0/8.0
-        val yRation: Double = 5.0/6.0
+        val xRatio: Double = 1.5/8.0
+        val yRatio: Double = 0.5/6.0
 
+        // there DEFINITELY is a better way to do this ...too bad!
+        canvas.translateX = anchor.width * xRatio
+        canvas.translateY = anchor.height * yRatio
+        canvas.width = anchor.width - (anchor.width * xRatio * 2)
+        canvas.height = anchor.height - (anchor.height * yRatio * 2)
 
+        if (canvas.width > canvas.height) {
+            canvas.width = canvas.height
+            canvas.translateX = anchor.width / 2 - canvas.width / 2 // offsets the board to the middle
+        } else {
+            canvas.height = canvas.width
+            canvas.translateY = anchor.height / 2 - canvas.height / 2 //
+        }
+
+        drawBoard()
 
     }
 
@@ -94,11 +113,11 @@ class MainView : View() {
                     gCon.fill = BLACK
                 else gCon.fill = WHITE
                 gCon.fillRect(
-                        (x * squareSize) + margin,
-                        (y * squareSize) + margin,
-                        squareSize,
-                        squareSize
-                )
+                                (x * squareSize) + margin,
+                                (y * squareSize) + margin,
+                                squareSize,
+                                squareSize
+                            )
             }
             if (gCon.fill == WHITE)
                 gCon.fill = BLACK

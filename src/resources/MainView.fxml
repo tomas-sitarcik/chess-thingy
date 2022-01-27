@@ -29,6 +29,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <Canvas fx:id="boardBackground" height="500.0" layoutX="150.0" layoutY="50.0" width="500.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="50.0" />
+      <Canvas fx:id="boardForeground" height="500.0" width="500.0" />
+      <Canvas fx:id="boardBackground" height="500.0" width="500.0" />
    </children>
 </AnchorPane>
