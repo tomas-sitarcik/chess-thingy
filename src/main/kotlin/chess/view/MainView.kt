@@ -36,7 +36,6 @@ class MainView : View() {
             old as Double
             new as Double
 
-            drawBoard()
 
         })
 
@@ -44,12 +43,18 @@ class MainView : View() {
             _: ObservableValue<out Number>?, old: Number, new: Number ->
             old as Double
             new as Double
-
-            drawBoard()
-
         })
 
         drawBoard()
+
+    }
+
+    private fun scaleBoardBackground(oldX: Double = -1.0 , newX: Double = -1.0, oldY: Double = -1.0, newY: Double = -1.0) {
+
+        val xRatio: Double = 5.0/8.0
+        val yRation: Double = 5.0/6.0
+
+
 
     }
 
