@@ -7,11 +7,6 @@ fun main(args: Array<String>) {
     val file = File("src/resources/MainView.fxml")
     println(file.name)
 
-
-
-
-
-
     fun printMoves(moves: Array<out IntArray>?) {
         if (moves != null) {
             for (move in moves) {

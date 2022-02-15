@@ -29,7 +29,7 @@
           </Menu>
         </menus>
       </MenuBar>
-      <Canvas fx:id="boardForeground" height="500.0" width="500.0" />
-      <Canvas fx:id="boardBackground" height="500.0" width="500.0" />
+      <Canvas fx:id="pieceCanvas" height="500.0" width="500.0" />
+      <Canvas fx:id="boardCanvas" height="500.0" width="500.0" />
    </children>
 </AnchorPane>
