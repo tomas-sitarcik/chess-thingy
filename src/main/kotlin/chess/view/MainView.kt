@@ -13,6 +13,8 @@ class MainView : View() {
     private val board : Canvas by fxid("boardCanvas")
     private val pieces : Canvas by fxid("pieceCanvas")
 
+    private val boardMargin = 0.025
+
     init {
 
         //currentStage?.isResizable = false
@@ -27,27 +29,26 @@ class MainView : View() {
         anchor.heightProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, new: Number ->
             scaleCanvas(board)
-            drawBoardBackground()
-            scaleCanvas(pieces)
-
-            val gCon = pieces.graphicsContext2D
-            gCon.drawImage(Image("file:src/resources/images/pieces/reimu.png"), 0.0, 0.0, new.toDouble()/10 , 512.0)
-            pieces.toFront()
+            //drawBoardBackground()
+            //scaleCanvas(pieces)
         })
 
-        anchor.widthProperty().addListener(ChangeListener{
+        anchor.widthProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, new: Number ->
             scaleCanvas(board)
-            drawBoardBackground()
-            scaleCanvas(pieces)
-
-            val gCon = pieces.graphicsContext2D
-            gCon.drawImage(Image("file:src/resources/images/pieces/reimu.png"), 0.0, 0.0, new.toDouble()/10, 512.0)
-            pieces.toFront()
+            //drawBoardBackground()
+            //scaleCanvas(pieces)
         })
 
+    }
 
+    private fun drawPieces() {
+        val xOrigin = board.width * boardMargin
+        val yOrigin = board.height * boardMargin
 
+        val gCon = pieces.graphicsContext2D
+        gCon.drawImage(Image("file:src/resources/images/pieces/reimu.png"),0.0, 0.0, 250.0, 250.0)
+        pieces.toFront()
     }
 
     private fun scaleCanvas(canvas: Canvas) {
@@ -84,8 +85,8 @@ class MainView : View() {
     private fun drawBoardBackground() {
 
         val gCon = board.graphicsContext2D
-        val margin = board.width * 0.05
-        val sizeActual = board.width - board.width * 0.1
+        val margin = board.width * boardMargin
+        val sizeActual = board.width - board.width * boardMargin * 2
         val squareSize = sizeActual / 8
 
         gCon.fill = BLACK
