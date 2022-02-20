@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -29,7 +33,12 @@
           </Menu>
         </menus>
       </MenuBar>
-      <Canvas fx:id="pieceCanvas" height="500.0" width="500.0" />
-      <Canvas fx:id="boardCanvas" height="500.0" width="500.0" />
+      <Canvas fx:id="pieceCanvas" disable="true" height="500.0" layoutX="150.0" layoutY="50.0" width="500.0" />
+      <Canvas fx:id="boardCanvas" height="500.0" layoutX="150.0" layoutY="50.0" width="500.0" />
+      <ListView fx:id="roundView" layoutX="659.0" layoutY="50.0" prefHeight="467.0" prefWidth="127.0" />
+      <Button fx:id="revertButton" layoutX="659.0" layoutY="525.0" mnemonicParsing="false" onAction="#revertToRound" prefHeight="25.0" prefWidth="127.0" text="Revert" />
+      <Label fx:id="timer" alignment="CENTER" layoutX="14.0" layoutY="50.0" prefHeight="34.0" prefWidth="127.0" text="00:00" />
+      <Label fx:id="roundCounter" alignment="CENTER" layoutX="14.0" layoutY="84.0" prefHeight="33.0" prefWidth="127.0" text="Round 1" />
+      <Text fx:id="infoField" layoutX="14.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for COLOR to make their move" textAlignment="CENTER" wrappingWidth="127.0" />
    </children>
 </AnchorPane>
