@@ -1,5 +1,9 @@
 package chess.view
 
+import chess.board.Piece
+import chess.board.PieceColor
+import chess.board.PieceType
+import chess.board.initBoard
 import javafx.beans.value.ObservableValue
 import javafx.scene.canvas.Canvas
 import javafx.scene.image.Image
@@ -10,10 +14,14 @@ import tornadofx.*
 class MainView : View() {
     override val root : AnchorPane by fxml("/fxml/MainView.fxml")
     private val anchor : AnchorPane by fxid("anchor")
-    private val board : Canvas by fxid("boardCanvas")
-    private val pieces : Canvas by fxid("pieceCanvas")
+    private val boardCanvas : Canvas by fxid("boardCanvas")
+    private val pieceCanvas : Canvas by fxid("pieceCanvas")
 
     private val boardMargin = 0.025
+    private var margin = boardCanvas.width * boardMargin
+    private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
+    private var squareSize = sizeActual / 8
+    private val board = initBoard()
 
     init {
 
@@ -26,32 +34,74 @@ class MainView : View() {
         //boardBackground.height = 500.0
         //boardBackground.width = 500.0
 
-        anchor.heightProperty().addListener(ChangeListener {
-            _: ObservableValue<out Number>?, _: Number, new: Number ->
-            scaleCanvas(board)
-            //drawBoardBackground()
-            //scaleCanvas(pieces)
-        })
-
         anchor.widthProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, new: Number ->
-            scaleCanvas(board)
-            //drawBoardBackground()
-            //scaleCanvas(pieces)
+            resizeCanvas(boardCanvas)
+            resizeCanvas(pieceCanvas)
+            drawPieces(board)
+            drawBoardBackground()
+        })
+
+        anchor.heightProperty().addListener(ChangeListener {
+                _: ObservableValue<out Number>?, _: Number, new: Number ->
+            resizeCanvas(boardCanvas)
+            resizeCanvas(pieceCanvas)
+            drawPieces(board)
+            drawBoardBackground()
         })
 
     }
 
-    private fun drawPieces() {
-        val xOrigin = board.width * boardMargin
-        val yOrigin = board.height * boardMargin
+    private fun drawPieces(board: Array<Array<Piece?>>) {
 
-        val gCon = pieces.graphicsContext2D
-        gCon.drawImage(Image("file:src/resources/images/pieces/reimu.png"),0.0, 0.0, 250.0, 250.0)
-        pieces.toFront()
+        //TODO OPTIMIZE MY GOD IS THIS SLOW
+
+        val origin = boardCanvas.width * boardMargin
+        val gCon = pieceCanvas.graphicsContext2D
+
+        gCon.clearRect(0.0, 0.0, boardCanvas.width, boardCanvas.height)
+
+        for (i in 0..7) {
+            for (j in 0..7) {
+                if (board[j][i] != null) {
+                    var temp = board[j][i]
+                    if (temp != null) {
+                        gCon.drawImage(getPieceImage(temp.type, temp.color), origin + (j * squareSize), origin + (i * squareSize), squareSize, squareSize)
+                    }
+                }
+            }
+        }
+
+        pieceCanvas.toFront()
     }
 
-    private fun scaleCanvas(canvas: Canvas) {
+    private fun getPieceImage(type: PieceType, color: PieceColor): Image {
+        //TODO add the actual piece graphics and their license (LOL)
+
+        return when (color) {
+
+            PieceColor.BLACK -> when (type) {
+                PieceType.KING -> Image("file:src/resources/images/pieces/reimuBlack.png")
+                PieceType.QUEEN -> Image("file:src/resources/images/pieces/reimuBlack.png")
+                PieceType.ROOK -> Image("file:src/resources/images/pieces/reimuBlack.png")
+                PieceType.KNIGHT -> Image("file:src/resources/images/pieces/reimuBlack.png")
+                PieceType.BISHOP -> Image("file:src/resources/images/pieces/reimuBlack.png")
+                PieceType.PAWN -> Image("file:src/resources/images/pieces/reimuBlack.png")
+            }
+
+            PieceColor.WHITE -> when (type) {
+                PieceType.KING -> Image("file:src/resources/images/pieces/reimu.png")
+                PieceType.QUEEN -> Image("file:src/resources/images/pieces/reimu.png")
+                PieceType.ROOK -> Image("file:src/resources/images/pieces/reimu.png")
+                PieceType.KNIGHT -> Image("file:src/resources/images/pieces/reimu.png")
+                PieceType.BISHOP -> Image("file:src/resources/images/pieces/reimu.png")
+                PieceType.PAWN -> Image("file:src/resources/images/pieces/reimu.png")
+            }
+        }
+
+    }
+
+    private fun resizeCanvas(canvas: Canvas) {
 
         val xRatio: Double = 3.0/16.0
         val yRatio: Double = 1.0/12.0
@@ -78,19 +128,20 @@ class MainView : View() {
         println("height " + anchor.height)
 
         println("board")
-        println("width " + board.width)
-        println("height " + board.height)
+        println("width " + boardCanvas.width)
+        println("height " + boardCanvas.height)
     }
 
     private fun drawBoardBackground() {
 
-        val gCon = board.graphicsContext2D
-        val margin = board.width * boardMargin
-        val sizeActual = board.width - board.width * boardMargin * 2
-        val squareSize = sizeActual / 8
+        margin = boardCanvas.width * boardMargin
+        sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
+        squareSize = sizeActual / 8
+
+        val gCon = boardCanvas.graphicsContext2D
 
         gCon.fill = BLACK
-        gCon.fillRect(0.0, 0.0, board.width, board.height)
+        gCon.fillRect(0.0, 0.0, boardCanvas.width, boardCanvas.height)
         //gCon.fill = WHITE
         //gCon.fillRect(margin, margin, boardBackground.width - 2 * margin, boardBackground.height - 2 * margin)
 
