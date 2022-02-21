@@ -48,20 +48,6 @@ fun main(args: Array<String>) {
         return null
     }
 
-    fun getPiece(position: IntArray, board: Array<Array<Piece?>>): Piece? {
-        return board[position[0]][position[1]]
-    }
-
-    fun setPiece(position: IntArray, piece: Piece?, board: Array<Array<Piece?>>) {
-        board[position[0]][position[1]] = piece
-    }
-
-    fun move(position: IntArray, destination: IntArray, board: Array<Array<Piece?>>) {
-        val piece = getPiece(position, board)
-        setPiece(destination, piece, board)
-        setPiece(position, null, board)
-    }
-
     var board = initBoard()
     //board[2][5] = Piece(PieceType.ROOK, PieceColor.WHITE)
     //board[3][5] = Piece(PieceType.ROOK, PieceColor.WHITE)

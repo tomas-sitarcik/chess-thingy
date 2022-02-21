@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="anchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
@@ -40,5 +41,6 @@
       <Label fx:id="timer" alignment="CENTER" layoutX="14.0" layoutY="50.0" prefHeight="34.0" prefWidth="127.0" text="00:00" />
       <Label fx:id="roundCounter" alignment="CENTER" layoutX="14.0" layoutY="84.0" prefHeight="33.0" prefWidth="127.0" text="Round 1" />
       <Text fx:id="infoField" layoutX="14.0" layoutY="130.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for COLOR to make their move" textAlignment="CENTER" wrappingWidth="127.0" />
+      <Pane fx:id="piecePane" layoutX="150.0" layoutY="50.0" prefHeight="500.0" prefWidth="500.0" />
    </children>
 </AnchorPane>
