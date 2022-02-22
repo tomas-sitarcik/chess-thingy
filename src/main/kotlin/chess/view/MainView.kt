@@ -8,11 +8,9 @@ import javafx.beans.value.ObservableValue
 import javafx.scene.canvas.Canvas
 import javafx.scene.image.Image
 import javafx.scene.layout.AnchorPane
-import javafx.scene.layout.Pane
+import javafx.scene.layout.GridPane
 import javafx.scene.paint.Color.*
-import javafx.scene.transform.Scale
 import tornadofx.*
-import javax.swing.text.html.ImageView
 import javax.swing.text.html.ListView
 import kotlin.Boolean.*
 import kotlin.math.round
@@ -23,6 +21,7 @@ class MainView : View() {
     private val boardCanvas : Canvas by fxid("boardCanvas")
     private val pieceCanvas : Canvas by fxid("pieceCanvas")
     private val roundList : ListView by fxid("roundView")
+    private val gridPane : GridPane by fxid("gridPane")
 
     private val xRatio: Double = 3.0/16.0
     private val yRatio: Double = 1.0/12.0
@@ -35,42 +34,56 @@ class MainView : View() {
 
     init {
 
-        //TODO eventually fix resizing of the window (lol, lmao)
-        //currentStage?.isResizable = false
+        //TODO eventually fix resizing of the window
+         //currentStage?.isResizable = false
+        currentStage?.minWidth = 800.0
+        currentStage?.minHeight = 600.0
 
         drawPieces(board)
         drawBoardBackground()
 
-        val groupScale = Scale()
-        boardCanvas.transforms.add(groupScale)
-        pieceCanvas.transforms.add(groupScale)
-
-        groupScale.pivotX = anchor.width
-        groupScale.pivotY = anchor.height
-        groupScale.x = 1.2
-        groupScale.y = 1.2
-
         fun resizeActions() {
             resizeCanvas(boardCanvas)
-            scaleCanvas(pieceCanvas)
+            resizeCanvas(pieceCanvas)
+            //scaleCanvas(pieceCanvas)
             drawBoardBackground()
+            drawPieces(board)
             update()
         }
 
         anchor.widthProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, new: Number ->
-            //resizeActions()
+            resizeActions()
         })
 
         anchor.heightProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, _: Number ->
-            //resizeActions()
+            resizeActions()
         })
 
     }
 
     private fun drawPieces(board: Array<Array<Piece?>>) {
 
+        //TODO OPTIMIZE MY GOD IS THIS SLOW, remove resizability?
+
+        val origin = pieceCanvas.width * boardMargin
+        val gCon = pieceCanvas.graphicsContext2D
+
+        gCon.clearRect(0.0, 0.0, pieceCanvas.width, pieceCanvas.height)
+
+        for (i in 0..7) {
+            for (j in 0..7) {
+                if (board[j][i] != null) {
+                    var temp = board[j][i]
+                    if (temp != null) {
+                        gCon.drawImage(getPieceImage(temp.type, temp.color), origin + (j * squareSize), origin + (i * squareSize), squareSize, squareSize)
+                    }
+                }
+            }
+        }
+
+        pieceCanvas.toFront()
     }
 
     private fun getPieceImage(type: PieceType, color: PieceColor): Image {
@@ -98,59 +111,20 @@ class MainView : View() {
 
     }
 
-    private fun initImageViewGrid(pane: Pane) {
-
-        var i = 0
-        var imageViewGrid = Array(8) { Array<javafx.scene.image.ImageView?>(8) { null } }
-
-        for (i in 0..7) {
-            for (j in 0..7) { //pawns
-                if (i == 0) {
-                    imageViewGrid[j][i] = javafx.scene.image.ImageView()
-                    imageViewGrid[j][i]?.let { pane.getChildList()?.add(it) }
-                }
-            }
-        }
-    }
-
-    private fun scaleCanvas(canvas: Canvas) {
-
-        canvas.translateX = anchor.width * xRatio
-        canvas.translateY = anchor.height * yRatio
-
-        var desiredWidth = anchor.width - (anchor.width * xRatio)
-        var desiredHeight = anchor.height - (anchor.height * yRatio)
-
-        if (desiredWidth > desiredHeight) {
-            desiredWidth = desiredHeight
-
-        } else {
-            desiredHeight = desiredWidth
-
-        }
-
-        canvas.translateX = anchor.width * 2 / desiredWidth
-        canvas.translateY = anchor.height * 2 / desiredHeight
-
-        canvas.scaleX = desiredWidth / canvas.width
-        canvas.scaleY = desiredHeight / canvas.height
-
-    }
-
     private fun resizeCanvas(canvas: Canvas) {
 
-        canvas.translateX = anchor.width * xRatio
-        canvas.translateY = anchor.height * yRatio
+        //canvas.translateX = anchor.width * xRatio
+        //canvas.translateY = anchor.height * yRatio
 
         canvas.width = anchor.width - (anchor.width * xRatio * 2)
         canvas.height = anchor.height - (anchor.height * yRatio * 2)
 
         if (canvas.width > canvas.height) {
             canvas.width = canvas.height
-            canvas.translateX = anchor.width / 2 - canvas.width / 2
+            //canvas.translateX = anchor.width / 2 - canvas.width / 2
         } else {
             canvas.height = canvas.width
-            canvas.translateY = anchor.height / 2 - canvas.height / 2
+            //canvas.translateY = anchor.height / 2 - canvas.height / 2
         }
 
     }
@@ -190,10 +164,10 @@ class MainView : View() {
                 if (gCon.fill == WHITE)
                     gCon.fill = BLACK
                 else gCon.fill = WHITE
-                gCon.fillRect(  (x * squareSize) + margin,
-                                (y * squareSize) + margin,
-                                squareSize,
-                                squareSize)
+                gCon.fillRect((x * squareSize) + margin,
+                              (y * squareSize) + margin,
+                              squareSize,
+                              squareSize)
             }
             if (gCon.fill == WHITE)
                 gCon.fill = BLACK
