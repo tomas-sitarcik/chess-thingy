@@ -135,6 +135,7 @@ class MainView : View() {
         squareSize = sizeActual / 8
     }
 
+
     fun testA() {
 
         println("pieces")
