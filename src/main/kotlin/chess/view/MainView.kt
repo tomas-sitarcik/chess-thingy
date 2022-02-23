@@ -12,8 +12,6 @@ import javafx.scene.layout.GridPane
 import javafx.scene.paint.Color.*
 import tornadofx.*
 import javax.swing.text.html.ListView
-import kotlin.Boolean.*
-import kotlin.math.round
 
 class MainView : View() {
     override val root : AnchorPane by fxml("/fxml/MainView.fxml")
@@ -31,11 +29,11 @@ class MainView : View() {
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
     private var squareSize = sizeActual / 8
     private val board = initBoard()
+    private val activeSide = PieceColor.WHITE
 
     init {
 
-        //TODO eventually fix resizing of the window
-         //currentStage?.isResizable = false
+        //currentStage?.isResizable = false
         currentStage?.minWidth = 800.0
         currentStage?.minHeight = 600.0
 
@@ -43,11 +41,10 @@ class MainView : View() {
         drawBoardBackground()
 
         fun resizeActions() {
-            resizeCanvas(boardCanvas)
-            resizeCanvas(pieceCanvas)
-            //scaleCanvas(pieceCanvas)
+            scaleCanvas(boardCanvas)
+            scaleCanvas(pieceCanvas)
             drawBoardBackground()
-            drawPieces(board)
+            //drawPieces(board)
             update()
         }
 
@@ -64,18 +61,27 @@ class MainView : View() {
     }
 
     private fun drawPieces(board: Array<Array<Piece?>>) {
-
-        //TODO OPTIMIZE MY GOD IS THIS SLOW, remove resizability?
+        //TODO(later) OPTIMIZE MY GOD IS THIS SLOW
 
         val origin = pieceCanvas.width * boardMargin
         val gCon = pieceCanvas.graphicsContext2D
 
         gCon.clearRect(0.0, 0.0, pieceCanvas.width, pieceCanvas.height)
 
+        var gBoard = Array(8) { Array<Piece?>(8) { null } }
+        if (activeSide == PieceColor.WHITE) { // reverses the board and makes the active side be the one on the bottom
+            for (i in 0..7) {
+                for (j in 0..7) {
+                    gBoard[j][7 - i] = board[j][i]
+                }
+            }
+        }
+
+
         for (i in 0..7) {
             for (j in 0..7) {
-                if (board[j][i] != null) {
-                    var temp = board[j][i]
+                if (gBoard[j][i] != null) {
+                    var temp = gBoard[j][i]
                     if (temp != null) {
                         gCon.drawImage(getPieceImage(temp.type, temp.color), origin + (j * squareSize), origin + (i * squareSize), squareSize, squareSize)
                     }
@@ -111,20 +117,18 @@ class MainView : View() {
 
     }
 
-    private fun resizeCanvas(canvas: Canvas) {
+    private fun scaleCanvas(canvas: Canvas) {
 
-        //canvas.translateX = anchor.width * xRatio
-        //canvas.translateY = anchor.height * yRatio
+        val desiredWidth = anchor.width - (anchor.width * xRatio * 2)
+        val desiredHeight = anchor.height - (anchor.height * yRatio * 2)
 
-        canvas.width = anchor.width - (anchor.width * xRatio * 2)
-        canvas.height = anchor.height - (anchor.height * yRatio * 2)
+        canvas.scaleX = desiredWidth / 500
+        canvas.scaleY = desiredHeight / 500
 
-        if (canvas.width > canvas.height) {
-            canvas.width = canvas.height
-            //canvas.translateX = anchor.width / 2 - canvas.width / 2
+        if (canvas.scaleX > canvas.scaleY) {
+            canvas.scaleX = canvas.scaleY
         } else {
-            canvas.height = canvas.width
-            //canvas.translateY = anchor.height / 2 - canvas.height / 2
+            canvas.scaleY = canvas.scaleX
         }
 
     }
@@ -137,6 +141,8 @@ class MainView : View() {
 
 
     fun testA() {
+
+        drawPieces(board)
 
         println("pieces")
         println("width " + pieceCanvas.width)
