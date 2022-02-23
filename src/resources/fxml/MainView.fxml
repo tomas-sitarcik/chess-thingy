@@ -64,8 +64,9 @@
             </AnchorPane>
             <Button fx:id="revertButton" mnemonicParsing="false" onAction="#revertToRound" prefHeight="25.0" prefWidth="150.0" text="Revert" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
-            <Canvas fx:id="boardCanvas" height="500.0" width="500.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
-            <Canvas fx:id="pieceCanvas" disable="true" height="500.0" width="500.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
+            <Canvas fx:id="boardCanvas" height="1000.0" scaleX="0.5" scaleY="0.5" width="1000.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
+            <Canvas fx:id="pieceCanvas" height="1000.0" scaleX="0.5" scaleY="0.5" width="1000.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
+            <Canvas fx:id="graphicsCanvas" height="1000.0" scaleX="0.5" scaleY="0.5" width="1000.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
          </children>
       </GridPane>
    </children>

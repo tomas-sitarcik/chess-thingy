@@ -5,14 +5,16 @@ import chess.board.PieceColor
 import chess.board.PieceType
 import chess.board.initBoard
 import javafx.beans.value.ObservableValue
+import javafx.event.EventHandler
 import javafx.scene.canvas.Canvas
 import javafx.scene.image.Image
+import javafx.scene.input.MouseEvent.MOUSE_CLICKED
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.GridPane
 import javafx.scene.paint.Color.*
 import tornadofx.*
 import java.awt.event.KeyEvent
-import java.beans.EventHandler
+import java.awt.event.MouseEvent
 import javax.swing.text.html.ListView
 
 class MainView : View() {
@@ -20,6 +22,7 @@ class MainView : View() {
     private val anchor : AnchorPane by fxid("anchor")
     private val boardCanvas : Canvas by fxid("boardCanvas")
     private val pieceCanvas : Canvas by fxid("pieceCanvas")
+    private val graphicsCanvas : Canvas by fxid("graphicsCanvas")
     private val roundList : ListView by fxid("roundView")
     private val gridPane : GridPane by fxid("gridPane")
 
@@ -31,7 +34,8 @@ class MainView : View() {
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
     private var squareSize = sizeActual / 8
     private val board = initBoard()
-    private val activeSide = PieceColor.WHITE
+    private var activeSide = PieceColor.WHITE
+
 
     init {
 
@@ -42,16 +46,8 @@ class MainView : View() {
         drawPieces(board)
         drawBoardBackground()
 
-        fun resizeActions() {
-            scaleCanvas(boardCanvas)
-            scaleCanvas(pieceCanvas)
-            drawBoardBackground()
-            //drawPieces(board)
-            update()
-        }
-
         anchor.widthProperty().addListener(ChangeListener {
-            _: ObservableValue<out Number>?, _: Number, new: Number ->
+            _: ObservableValue<out Number>?, _: Number, _: Number ->
             resizeActions()
         })
 
@@ -60,12 +56,76 @@ class MainView : View() {
             resizeActions()
         })
 
-        pieceCanvas.addEventHandler(KeyEvent)
+        pieceCanvas.onMouseClicked = EventHandler {
+            print(it.x)
+            print(" ")
+            println(it.y)
+
+            val coords = determineBoardCoords(it.x, it.y)
+            print(coords[0])
+            print(", ")
+            println(coords[1])
+            //highlightSquare(coords, 4)
+
+        }
+
+        pieceCanvas.onMouseMoved = EventHandler {
+            wipeHighlightCanvas()
+            val coords = determineBoardCoords(it.x, it.y)
+            highlightSquare(coords, 4)
+        }
 
     }
 
+
+    private fun determineBoardCoords(rawX: Double, rawY: Double): IntArray {
+        var xActual: Double = rawX - pieceCanvas.width * boardMargin
+        var yActual: Double = rawY - pieceCanvas.height * boardMargin
+
+        var xCoord: Int = -1
+        var yCoord: Int = -1
+
+        if (xActual / squareSize > 8 || yActual / squareSize > 8 || xActual / squareSize < 0 || yActual / squareSize < 0){
+            xActual = -1.0
+            yActual = -1.0
+        } else {
+            xCoord = (xActual / squareSize).toInt()
+            yCoord = (yActual / squareSize).toInt()
+        }
+
+        return intArrayOf(xCoord, yCoord)
+    }
+
+    private fun highlightSquare(coords: IntArray, highlightWidth: Int = 3) {
+        if (coords[0] >= 0 && coords[1] >= 0){
+            val gCon = graphicsCanvas.graphicsContext2D
+            val origin = pieceCanvas.width * boardMargin
+            gCon.fill = RED
+
+            gCon.fillRect(origin + (coords[0] * squareSize) - highlightWidth,
+                    origin + (coords[1] * squareSize) - highlightWidth,
+                    squareSize + highlightWidth * 2,
+                    squareSize + highlightWidth * 2)
+
+            gCon.clearRect(origin + (coords[0] * squareSize), origin + (coords[1] * squareSize), squareSize, squareSize)
+        }
+    }
+
+    private fun wipeHighlightCanvas() {
+        graphicsCanvas.graphicsContext2D.clearRect(0.0, 0.0, graphicsCanvas.width, graphicsCanvas.height)
+    }
+
+    private fun resizeActions() {
+        scaleCanvas(boardCanvas)
+        scaleCanvas(pieceCanvas)
+        scaleCanvas(graphicsCanvas)
+        drawBoardBackground()
+        drawPieces(board)
+        update()
+    }
+
     private fun drawPieces(board: Array<Array<Piece?>>) {
-        //TODO(later) OPTIMIZE MY GOD IS THIS SLOW
+        //TODO(later) OPTIMIZE MY GOD IS THIS SLOW (lesser priority now that the canvas is being scaled)
 
         val origin = pieceCanvas.width * boardMargin
         val gCon = pieceCanvas.graphicsContext2D
@@ -126,8 +186,8 @@ class MainView : View() {
         val desiredWidth = anchor.width - (anchor.width * xRatio * 2)
         val desiredHeight = anchor.height - (anchor.height * yRatio * 2)
 
-        canvas.scaleX = desiredWidth / 500
-        canvas.scaleY = desiredHeight / 500
+        canvas.scaleX = desiredWidth / 1000
+        canvas.scaleY = desiredHeight / 1000
 
         if (canvas.scaleX > canvas.scaleY) {
             canvas.scaleX = canvas.scaleY
