@@ -11,6 +11,8 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.GridPane
 import javafx.scene.paint.Color.*
 import tornadofx.*
+import java.awt.event.KeyEvent
+import java.beans.EventHandler
 import javax.swing.text.html.ListView
 
 class MainView : View() {
@@ -57,6 +59,8 @@ class MainView : View() {
             _: ObservableValue<out Number>?, _: Number, _: Number ->
             resizeActions()
         })
+
+        pieceCanvas.addEventHandler(KeyEvent)
 
     }
 
