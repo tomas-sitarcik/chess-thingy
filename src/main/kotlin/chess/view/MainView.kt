@@ -8,13 +8,12 @@ import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.scene.canvas.Canvas
 import javafx.scene.image.Image
-import javafx.scene.input.MouseEvent.MOUSE_CLICKED
+import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.GridPane
 import javafx.scene.paint.Color.*
+import javafx.scene.text.FontWeight
 import tornadofx.*
-import java.awt.event.KeyEvent
-import java.awt.event.MouseEvent
 import javax.swing.text.html.ListView
 
 class MainView : View() {
@@ -22,9 +21,10 @@ class MainView : View() {
     private val anchor : AnchorPane by fxid("anchor")
     private val boardCanvas : Canvas by fxid("boardCanvas")
     private val pieceCanvas : Canvas by fxid("pieceCanvas")
-    private val graphicsCanvas : Canvas by fxid("graphicsCanvas")
-    private val roundList : ListView by fxid("roundView")
-    private val gridPane : GridPane by fxid("gridPane")
+    private val mouseHighlightCanvas : Canvas by fxid("mouseHighlightCanvas")
+    private val whiteMoves : javafx.scene.control.ListView<String> by fxid("listView1")
+    private val blackMoves : javafx.scene.control.ListView<String> by fxid("listView2")
+    private val gridPane : GridPane by fxid("listView2")
 
     private val xRatio: Double = 3.0/16.0
     private val yRatio: Double = 1.0/12.0
@@ -43,8 +43,23 @@ class MainView : View() {
         currentStage?.minWidth = 800.0
         currentStage?.minHeight = 600.0
 
+        whiteMoves.items.addAll("aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa")
+        blackMoves.items.addAll("aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa")
         drawPieces(board)
         drawBoardBackground()
+
+        whiteMoves.addEventFilter(ScrollEvent.SCROLL, EventHandler {
+            println(it.deltaX)
+            println(it.deltaY)
+        })
+
+        whiteMoves.onScrollFinishedProperty().addListener(ChangeListener {
+            observableValue: ObservableValue<out EventHandler<in ScrollEvent>>?,
+            eventHandler: EventHandler<in ScrollEvent>,
+            eventHandler1: EventHandler<in ScrollEvent> ->
+
+            eventHandler
+        })
 
         anchor.widthProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, _: Number ->
@@ -71,7 +86,7 @@ class MainView : View() {
         pieceCanvas.onMouseMoved = EventHandler {
             wipeHighlightCanvas()
             val coords = determineBoardCoords(it.x, it.y)
-            highlightSquare(coords, 4)
+            highlightSquare(mouseHighlightCanvas, coords, 4)
         }
 
     }
@@ -95,10 +110,10 @@ class MainView : View() {
         return intArrayOf(xCoord, yCoord)
     }
 
-    private fun highlightSquare(coords: IntArray, highlightWidth: Int = 3) {
+    private fun highlightSquare(canvas: Canvas, coords: IntArray, highlightWidth: Int = 3) {
         if (coords[0] >= 0 && coords[1] >= 0){
-            val gCon = graphicsCanvas.graphicsContext2D
-            val origin = pieceCanvas.width * boardMargin
+            val gCon = canvas.graphicsContext2D
+            val origin = canvas.width * boardMargin
             gCon.fill = RED
 
             gCon.fillRect(origin + (coords[0] * squareSize) - highlightWidth,
@@ -111,13 +126,13 @@ class MainView : View() {
     }
 
     private fun wipeHighlightCanvas() {
-        graphicsCanvas.graphicsContext2D.clearRect(0.0, 0.0, graphicsCanvas.width, graphicsCanvas.height)
+        mouseHighlightCanvas.graphicsContext2D.clearRect(0.0, 0.0, mouseHighlightCanvas.width, mouseHighlightCanvas.height)
     }
 
     private fun resizeActions() {
         scaleCanvas(boardCanvas)
         scaleCanvas(pieceCanvas)
-        scaleCanvas(graphicsCanvas)
+        scaleCanvas(mouseHighlightCanvas)
         drawBoardBackground()
         drawPieces(board)
         update()
