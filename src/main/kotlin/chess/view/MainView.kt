@@ -66,7 +66,6 @@ class MainView : View() {
             print(", ")
             println(coords[1])
             //highlightSquare(coords, 4)
-
         }
 
         pieceCanvas.onMouseMoved = EventHandler {
@@ -141,7 +140,6 @@ class MainView : View() {
             }
         }
 
-
         for (i in 0..7) {
             for (j in 0..7) {
                 if (gBoard[j][i] != null) {
@@ -152,7 +150,6 @@ class MainView : View() {
                 }
             }
         }
-
         pieceCanvas.toFront()
     }
 
@@ -186,8 +183,8 @@ class MainView : View() {
         val desiredWidth = anchor.width - (anchor.width * xRatio * 2)
         val desiredHeight = anchor.height - (anchor.height * yRatio * 2)
 
-        canvas.scaleX = desiredWidth / 1000
-        canvas.scaleY = desiredHeight / 1000
+        canvas.scaleX = desiredWidth / canvas.width
+        canvas.scaleY = desiredHeight / canvas.height
 
         if (canvas.scaleX > canvas.scaleY) {
             canvas.scaleX = canvas.scaleY
