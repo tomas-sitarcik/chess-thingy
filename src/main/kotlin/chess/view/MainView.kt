@@ -39,27 +39,14 @@ class MainView : View() {
 
     init {
 
+        //TODO CLEAN UP THIS FILE
+
         //currentStage?.isResizable = false
         currentStage?.minWidth = 800.0
         currentStage?.minHeight = 600.0
 
-        whiteMoves.items.addAll("aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa")
-        blackMoves.items.addAll("aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa", "aaaa")
         drawPieces(board)
         drawBoardBackground()
-
-        whiteMoves.addEventFilter(ScrollEvent.SCROLL, EventHandler {
-            println(it.deltaX)
-            println(it.deltaY)
-        })
-
-        whiteMoves.onScrollFinishedProperty().addListener(ChangeListener {
-            observableValue: ObservableValue<out EventHandler<in ScrollEvent>>?,
-            eventHandler: EventHandler<in ScrollEvent>,
-            eventHandler1: EventHandler<in ScrollEvent> ->
-
-            eventHandler
-        })
 
         anchor.widthProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, _: Number ->
@@ -173,21 +160,21 @@ class MainView : View() {
 
         return when (color) {
             PieceColor.BLACK -> when (type) {
-                PieceType.KING -> Image("file:src/resources/images/pieces/reimuBlack.png")
-                PieceType.QUEEN -> Image("file:src/resources/images/pieces/reimuBlack.png")
-                PieceType.ROOK -> Image("file:src/resources/images/pieces/reimuBlack.png")
-                PieceType.KNIGHT -> Image("file:src/resources/images/pieces/reimuBlack.png")
-                PieceType.BISHOP -> Image("file:src/resources/images/pieces/reimuBlack.png")
-                PieceType.PAWN -> Image("file:src/resources/images/pieces/reimuBlack.png")
+                PieceType.KING -> Image("file:src/resources/images/pieces/black_king.png")
+                PieceType.QUEEN -> Image("file:src/resources/images/pieces/black_queen.png")
+                PieceType.ROOK -> Image("file:src/resources/images/pieces/black_rook.png")
+                PieceType.KNIGHT -> Image("file:src/resources/images/pieces/black_knight.png")
+                PieceType.BISHOP -> Image("file:src/resources/images/pieces/black_bishop.png")
+                PieceType.PAWN -> Image("file:src/resources/images/pieces/black_pawn.png")
             }
 
             PieceColor.WHITE -> when (type) {
-                PieceType.KING -> Image("file:src/resources/images/pieces/reimu.png")
-                PieceType.QUEEN -> Image("file:src/resources/images/pieces/reimu.png")
-                PieceType.ROOK -> Image("file:src/resources/images/pieces/reimu.png")
-                PieceType.KNIGHT -> Image("file:src/resources/images/pieces/reimu.png")
-                PieceType.BISHOP -> Image("file:src/resources/images/pieces/reimu.png")
-                PieceType.PAWN -> Image("file:src/resources/images/pieces/reimu.png")
+                PieceType.KING -> Image("file:src/resources/images/pieces/white_king.png")
+                PieceType.QUEEN -> Image("file:src/resources/images/pieces/white_queen.png")
+                PieceType.ROOK -> Image("file:src/resources/images/pieces/white_rook.png")
+                PieceType.KNIGHT -> Image("file:src/resources/images/pieces/white_knight.png")
+                PieceType.BISHOP -> Image("file:src/resources/images/pieces/white_bishop.png")
+                PieceType.PAWN -> Image("file:src/resources/images/pieces/white_pawn.png")
             }
         }
 
@@ -237,7 +224,7 @@ class MainView : View() {
 
         val gCon = boardCanvas.graphicsContext2D
 
-        gCon.fill = BLACK
+        gCon.fill = GREY
         gCon.fillRect(0.0, 0.0, boardCanvas.width, boardCanvas.height)
         //gCon.fill = WHITE
         //gCon.fillRect(margin, margin, boardBackground.width - 2 * margin, boardBackground.height - 2 * margin)
@@ -245,7 +232,7 @@ class MainView : View() {
         for (x in 0..7) {
             for (y in 0..7) {
                 if (gCon.fill == WHITE)
-                    gCon.fill = BLACK
+                    gCon.fill = GREY
                 else gCon.fill = WHITE
                 gCon.fillRect((x * squareSize) + margin,
                               (y * squareSize) + margin,
@@ -253,7 +240,7 @@ class MainView : View() {
                               squareSize)
             }
             if (gCon.fill == WHITE)
-                gCon.fill = BLACK
+                gCon.fill = GREY
             else gCon.fill = WHITE
         }
     }
