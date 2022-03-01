@@ -2,21 +2,16 @@ package chess.view
 
 import chess.board.Piece
 import chess.board.PieceColor
-import chess.board.PieceType
 import chess.board.initBoard
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.scene.canvas.Canvas
-import javafx.scene.image.Image
-import javafx.scene.input.ScrollEvent
 import javafx.scene.layout.AnchorPane
-import javafx.scene.layout.GridPane
 import javafx.scene.paint.Color.*
-import javafx.scene.text.FontWeight
 import tornadofx.*
-import javax.swing.text.html.ListView
 
 class MainView : View() {
+
     override val root : AnchorPane by fxml("/fxml/MainView.fxml")
     private val anchor : AnchorPane by fxid("anchor")
     private val boardCanvas : Canvas by fxid("boardCanvas")
@@ -24,7 +19,6 @@ class MainView : View() {
     private val mouseHighlightCanvas : Canvas by fxid("mouseHighlightCanvas")
     private val whiteMoves : javafx.scene.control.ListView<String> by fxid("listView1")
     private val blackMoves : javafx.scene.control.ListView<String> by fxid("listView2")
-    private val gridPane : GridPane by fxid("listView2")
 
     private val xRatio: Double = 3.0/16.0
     private val yRatio: Double = 1.0/12.0
@@ -71,7 +65,7 @@ class MainView : View() {
         }
 
         pieceCanvas.onMouseMoved = EventHandler {
-            wipeHighlightCanvas()
+            wipeCanvas(mouseHighlightCanvas)
             val coords = determineBoardCoords(it.x, it.y)
             highlightSquare(mouseHighlightCanvas, coords, 4)
         }
@@ -112,8 +106,8 @@ class MainView : View() {
         }
     }
 
-    private fun wipeHighlightCanvas() {
-        mouseHighlightCanvas.graphicsContext2D.clearRect(0.0, 0.0, mouseHighlightCanvas.width, mouseHighlightCanvas.height)
+    private fun wipeCanvas(canvas: Canvas) {
+        canvas.graphicsContext2D.clearRect(0.0, 0.0, canvas.width, canvas.height)
     }
 
     private fun resizeActions() {
@@ -153,31 +147,6 @@ class MainView : View() {
             }
         }
         pieceCanvas.toFront()
-    }
-
-    private fun getPieceImage(type: PieceType, color: PieceColor): Image {
-        //TODO add the actual piece images and their license (LOL)
-
-        return when (color) {
-            PieceColor.BLACK -> when (type) {
-                PieceType.KING -> Image("file:src/resources/images/pieces/black_king.png")
-                PieceType.QUEEN -> Image("file:src/resources/images/pieces/black_queen.png")
-                PieceType.ROOK -> Image("file:src/resources/images/pieces/black_rook.png")
-                PieceType.KNIGHT -> Image("file:src/resources/images/pieces/black_knight.png")
-                PieceType.BISHOP -> Image("file:src/resources/images/pieces/black_bishop.png")
-                PieceType.PAWN -> Image("file:src/resources/images/pieces/black_pawn.png")
-            }
-
-            PieceColor.WHITE -> when (type) {
-                PieceType.KING -> Image("file:src/resources/images/pieces/white_king.png")
-                PieceType.QUEEN -> Image("file:src/resources/images/pieces/white_queen.png")
-                PieceType.ROOK -> Image("file:src/resources/images/pieces/white_rook.png")
-                PieceType.KNIGHT -> Image("file:src/resources/images/pieces/white_knight.png")
-                PieceType.BISHOP -> Image("file:src/resources/images/pieces/white_bishop.png")
-                PieceType.PAWN -> Image("file:src/resources/images/pieces/white_pawn.png")
-            }
-        }
-
     }
 
     private fun scaleCanvas(canvas: Canvas) {
