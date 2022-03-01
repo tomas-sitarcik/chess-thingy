@@ -2,12 +2,18 @@ package chess.view
 
 import chess.board.Piece
 import chess.board.PieceColor
+import chess.board.getPossibleMoves
 import chess.board.initBoard
+import javafx.animation.KeyFrame
+import javafx.animation.Timeline
 import javafx.beans.value.ObservableValue
+import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.canvas.Canvas
 import javafx.scene.layout.AnchorPane
+import javafx.scene.paint.Color
 import javafx.scene.paint.Color.*
+import javafx.util.Duration
 import tornadofx.*
 
 class MainView : View() {
@@ -17,6 +23,7 @@ class MainView : View() {
     private val boardCanvas : Canvas by fxid("boardCanvas")
     private val pieceCanvas : Canvas by fxid("pieceCanvas")
     private val mouseHighlightCanvas : Canvas by fxid("mouseHighlightCanvas")
+    private val moveHightlightCanvas : Canvas by fxid("moveHighlightCanvas")
     private val whiteMoves : javafx.scene.control.ListView<String> by fxid("listView1")
     private val blackMoves : javafx.scene.control.ListView<String> by fxid("listView2")
 
@@ -52,26 +59,48 @@ class MainView : View() {
             resizeActions()
         })
 
+
         pieceCanvas.onMouseClicked = EventHandler {
+            wipeCanvas(moveHightlightCanvas)
             print(it.x)
             print(" ")
             println(it.y)
 
             val coords = determineBoardCoords(it.x, it.y)
-            print(coords[0])
-            print(", ")
-            println(coords[1])
-            //highlightSquare(coords, 4)
+
+            if (coords[0] != -1 && coords[1] != -1) {
+                if (board[coords[0]][coords[1]] is Piece) {
+                    var color = board[coords[0]][coords[1]]?.color
+                    val possibleMoves = getPossibleMoves(intArrayOf(coords[0], coords[1]), board)
+                    if (possibleMoves != null) {
+                        for (move in possibleMoves) {
+                            if (color != board[move[0]][move[1]]?.color) {
+                                fillSquare(moveHightlightCanvas, move, rgb(0, 255, 125, 0.5))
+                            }
+                        }
+                        fillSquare(moveHightlightCanvas, coords, rgb(255, 255, 0, 0.5))
+                    }
+                }
+            }
         }
 
         pieceCanvas.onMouseMoved = EventHandler {
             wipeCanvas(mouseHighlightCanvas)
             val coords = determineBoardCoords(it.x, it.y)
             highlightSquare(mouseHighlightCanvas, coords, 4)
+            //fillSquare(mouseHighlightCanvas, coords, rgb(0, 255, 125, 0.5))
         }
 
     }
 
+    private fun resizeActions() {
+        scaleCanvas(boardCanvas)
+        scaleCanvas(pieceCanvas)
+        scaleCanvas(mouseHighlightCanvas)
+        drawBoardBackground()
+        drawPieces(board)
+        update()
+    }
 
     private fun determineBoardCoords(rawX: Double, rawY: Double): IntArray {
         var xActual: Double = rawX - pieceCanvas.width * boardMargin
@@ -106,17 +135,21 @@ class MainView : View() {
         }
     }
 
-    private fun wipeCanvas(canvas: Canvas) {
-        canvas.graphicsContext2D.clearRect(0.0, 0.0, canvas.width, canvas.height)
+    private fun fillSquare(canvas: Canvas, coords: IntArray, highlightColor: Color) {
+        if (coords[0] >= 0 && coords[1] >= 0){
+            val gCon = canvas.graphicsContext2D
+            val origin = canvas.width * boardMargin
+            gCon.fill = highlightColor
+
+            gCon.fillRect(origin + (coords[0] * squareSize),
+                    origin + (coords[1] * squareSize),
+                    squareSize,
+                    squareSize)
+        }
     }
 
-    private fun resizeActions() {
-        scaleCanvas(boardCanvas)
-        scaleCanvas(pieceCanvas)
-        scaleCanvas(mouseHighlightCanvas)
-        drawBoardBackground()
-        drawPieces(board)
-        update()
+    private fun wipeCanvas(canvas: Canvas) {
+        canvas.graphicsContext2D.clearRect(0.0, 0.0, canvas.width, canvas.height)
     }
 
     private fun drawPieces(board: Array<Array<Piece?>>) {
