@@ -138,8 +138,10 @@ fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>, color: PieceColor
         if (y < 7) {
             if (board[x][y + 1] == null) {
                 moves.add(intArrayOf(x, y + 1))
-                if (board[x][y + 2] == null && y == 1) {
-                    moves.add(intArrayOf(x, y + 2))
+                if (y == 1) {
+                    if (board[x][y + 2] == null) {
+                        moves.add(intArrayOf(x, y + 2))
+                    }
                 }
             }
         }
@@ -147,8 +149,10 @@ fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>, color: PieceColor
         if (y > 0) {
             if (board[x][y - 1] == null) {
                 moves.add(intArrayOf(x, y - 1))
-                if (board[x][y - 2] == null && y == 6) {
-                    moves.add(intArrayOf(x, y - 2))
+                if (y == 6) {
+                    if (board[x][y - 2] == null) {
+                        moves.add(intArrayOf(x, y - 2))
+                    }
                 }
             }
         }

@@ -4,14 +4,16 @@ import java.lang.StringBuilder
 
 /**
  * DONT FORGET
- * [ROOK, PAWN, ----, ----, ----, ----, PAWN, ROOK]
- * [KNIGHT, PAWN, ----, ----, ----, ----, PAWN, KNIGHT]
- * [BISHOP, PAWN, ----, ----, ----, ----, PAWN, BISHOP]
- * [QUEEN, PAWN, ----, ----, ----, ----, PAWN, KING]
- * [KING, PAWN, ----, ----, ----, ----, PAWN, QUEEN]
- * [BISHOP, PAWN, ----, ----, ----, ----, PAWN, BISHOP]
- * [KNIGHT, PAWN, ----, ----, ----, ----, PAWN, KNIGHT]
- * [ROOK, PAWN, ----, ----, ----, ----, PAWN, ROOK]
+ * [
+ *   [ROOK, PAWN, ----, ----, ----, ----, PAWN, ROOK]
+ *   [KNIGHT, PAWN, ----, ----, ----, ----, PAWN, KNIGHT]
+ *   [BISHOP, PAWN, ----, ----, ----, ----, PAWN, BISHOP]
+ *   [QUEEN, PAWN, ----, ----, ----, ----, PAWN, KING]
+ *   [KING, PAWN, ----, ----, ----, ----, PAWN, QUEEN]
+ *   [BISHOP, PAWN, ----, ----, ----, ----, PAWN, BISHOP]
+ *   [KNIGHT, PAWN, ----, ----, ----, ----, PAWN, KNIGHT]
+ *   [ROOK, PAWN, ----, ----, ----, ----, PAWN, ROOK]
+ * ]
  * THIS IS THE REAL SHAPE
  */
 
