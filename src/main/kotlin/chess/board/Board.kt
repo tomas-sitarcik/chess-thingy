@@ -1,5 +1,6 @@
 package chess.board
 
+import chess.view.MainView
 import java.lang.StringBuilder
 
 /**

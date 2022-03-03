@@ -70,7 +70,7 @@ fun main(args: Array<String>) {
 
 
 
-    move(intArrayOf(3, 7), intArrayOf(3, 3), board)
-    printMoves(intArrayOf(3, 3), board)
+    //move(intArrayOf(3, 7), intArrayOf(3, 3), board)
+    //printMoves(intArrayOf(3, 3), board)
 
 }
