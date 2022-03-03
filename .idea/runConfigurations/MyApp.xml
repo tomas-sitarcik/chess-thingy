@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MyApp" type="TORNADOFX_RUNCONFIGURATION" factoryName="TornadoFX Configuration Factory" run-type="App" live-views="false" live-stylesheets="false" dump-stylesheets="false">
+    <option name="ALTERNATIVE_JRE_PATH" value="Kotlin SDK" />
     <option name="MAIN_CLASS_NAME" value="chess.app.MyApp" />
     <module name="untitled" />
     <method v="2">

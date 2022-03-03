@@ -1,6 +1,7 @@
 package chess.view
 
 import chess.board.*
+import chess.game.movePiece
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.scene.canvas.Canvas
@@ -20,9 +21,6 @@ class MainView : View() {
     private val whiteMoves : javafx.scene.control.ListView<String> by fxid("listView1")
     private val blackMoves : javafx.scene.control.ListView<String> by fxid("listView2")
 
-    private val xRatio: Double = 3.0/16.0
-    private val yRatio: Double = 1.0/12.0
-
     private val boardMargin = 0.025
     private var margin = boardCanvas.width * boardMargin
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
@@ -31,6 +29,15 @@ class MainView : View() {
     private var activeSide = PieceColor.BLACK
     private var activeSquare: IntArray? = null
     private var validMoves: Array<out IntArray>? = null
+    private val canvasArray = arrayOf(boardCanvas, pieceCanvas, mouseHighlightCanvas, moveHighlightCanvas)
+
+    private val canvasMap: Map<String, Canvas> =
+            mapOf<String, Canvas>(
+                                    "board" to boardCanvas,
+                                    "pieces" to pieceCanvas,
+                                    "highlights" to mouseHighlightCanvas,
+                                    "moves" to moveHighlightCanvas
+                                 )
 
 
     init {
@@ -57,7 +64,7 @@ class MainView : View() {
 
         pieceCanvas.onMouseClicked = EventHandler {
 
-            val coords = determineBoardCoords(it.x, it.y)
+            val coords = determineBoardCoords(it.x, it.y, true)
 
             if (checkCoords(coords)){
                 wipeCanvas(moveHighlightCanvas)
@@ -65,16 +72,7 @@ class MainView : View() {
                 print(" ")
                 println(it.y)
 
-                if (validMoves != null) {
-                    for (move in validMoves!!) {
-                        if (coords.contentEquals(move)) {
-                            move(activeSquare!!, move, mainBoard)
-                            drawPieces(mainBoard)
-                            wipeCanvas(moveHighlightCanvas)
-                        }
-                    }
-                }
-
+                movePiece(coords, activeSquare, validMoves, mainBoard)
 
                 if (!coords.contentEquals(activeSquare)) {
                     setActiveSquare(coords)
@@ -82,43 +80,23 @@ class MainView : View() {
 
                 if (activeSquare != null) {
                     validMoves = filterPossibleMoves(activeSquare!!, mainBoard)
-                    fillMoves(filterPossibleMoves(activeSquare!!, mainBoard))
+                    fillMoves(validMoves)
                     setActiveSquare(activeSquare!!)
 
-
-                    if (validMoves != null) {
-                        for (move in validMoves!!) {
-                            if (coords.contentEquals(move)){
-                                move(activeSquare!!, move, mainBoard)
-                                drawPieces(mainBoard)
-                                wipeCanvas(moveHighlightCanvas)
-                            }
-                        }
-                    }
+                    movePiece(coords, activeSquare, validMoves, mainBoard)
 
                 } else {
-                    fillMoves(filterPossibleMoves(coords, mainBoard))
+                    fillMoves(validMoves)
                     setActiveSquare(coords)
                 }
+
+
+                //wipeCanvas(moveHighlightCanvas)
             }
 
+            drawPieces(mainBoard)
 
         }
-
-        /*
-        pieceCanvas.onDragDetected = EventHandler {
-            it.isPrimaryButtonDown
-            wipeCanvas(moveHighlightCanvas)
-            val coords = determineBoardCoords(it.x, it.y)
-            fillMoves(filterPossibleMoves(coords, mainBoard))
-            setActiveSquare(coords)
-        }
-
-        pieceCanvas.onDragDone = EventHandler {
-            move(activeSquare, determineBoardCoords(it.x, it.y), mainBoard)
-        }
-
-         */
 
         pieceCanvas.onMouseMoved = EventHandler {
             wipeCanvas(mouseHighlightCanvas)
@@ -160,6 +138,11 @@ class MainView : View() {
         fillSquare(moveHighlightCanvas, coords, rgb(255, 255, 0, 0.5))
     }
 
+    private fun unsetActiveSquare() {
+        activeSquare = null
+        wipeCanvas(moveHighlightCanvas)
+    }
+
     private fun fillMoves(moves: Array<out IntArray>?) {
 
         if (moves != null) {
@@ -176,27 +159,36 @@ class MainView : View() {
     }
 
     private fun resizeActions() {
-        scaleCanvas(boardCanvas)
-        scaleCanvas(pieceCanvas)
-        scaleCanvas(mouseHighlightCanvas)
+        scaleCanvas(boardCanvas, anchor)
+        scaleCanvas(pieceCanvas, anchor)
+        scaleCanvas(mouseHighlightCanvas, anchor)
+        scaleCanvas(moveHighlightCanvas, anchor)
         drawBoardBackground()
         drawPieces(mainBoard)
         update()
     }
 
-    private fun determineBoardCoords(rawX: Double, rawY: Double): IntArray {
+    private fun determineBoardCoords(rawX: Double, rawY: Double, realMode: Boolean = true): IntArray {
+
         var xActual: Double = rawX - pieceCanvas.width * boardMargin
         var yActual: Double = rawY - pieceCanvas.height * boardMargin
 
         var xCoord: Int = -1
         var yCoord: Int = -1
 
-        if (xActual / squareSize > 8 || yActual / squareSize > 8 || xActual / squareSize < 0 || yActual / squareSize < 0){
+        if (xActual / squareSize > 8 || yActual / squareSize > 8 || xActual / squareSize < 0 || yActual / squareSize < 0) {
             xActual = -1.0
             yActual = -1.0
         } else {
-            xCoord = (xActual / squareSize).toInt()
-            yCoord = (yActual / squareSize).toInt()
+
+            if (activeSide == PieceColor.WHITE && realMode) {
+                xCoord =  (xActual / squareSize).toInt()
+                yCoord =  7 - (yActual / squareSize).toInt()
+            } else {
+                xCoord = (xActual / squareSize).toInt()
+                yCoord = (yActual / squareSize).toInt()
+            }
+
         }
 
         return intArrayOf(xCoord, yCoord)
@@ -266,22 +258,6 @@ class MainView : View() {
         pieceCanvas.toFront()
     }
 
-    private fun scaleCanvas(canvas: Canvas) {
-
-        val desiredWidth = anchor.width - (anchor.width * xRatio * 2)
-        val desiredHeight = anchor.height - (anchor.height * yRatio * 2)
-
-        canvas.scaleX = desiredWidth / canvas.width
-        canvas.scaleY = desiredHeight / canvas.height
-
-        if (canvas.scaleX > canvas.scaleY) {
-            canvas.scaleX = canvas.scaleY
-        } else {
-            canvas.scaleY = canvas.scaleX
-        }
-
-    }
-
     private fun update() {
         margin = boardCanvas.width * boardMargin
         sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
@@ -291,6 +267,13 @@ class MainView : View() {
 
     fun testA() {
 
+        if (activeSide == PieceColor.BLACK) {
+            activeSide = PieceColor.WHITE
+        } else {
+            activeSide = PieceColor.WHITE
+        }
+        moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1.0
+        mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1.0
         drawPieces(mainBoard)
 
         println("pieces")
