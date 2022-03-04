@@ -4,10 +4,8 @@ import chess.board.*
 import chess.game.*
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
-import javafx.scene.Node
 import javafx.scene.canvas.Canvas
 import javafx.scene.layout.AnchorPane
-import javafx.scene.paint.Color
 import javafx.scene.paint.Color.*
 import tornadofx.*
 
@@ -31,6 +29,8 @@ class MainView() : View() {
     var activeSquare: IntArray? = null
     var validMoves: Array<out IntArray>? = null
     val canvasArray = arrayOf(boardCanvas, pieceCanvas, mouseHighlightCanvas, moveHighlightCanvas)
+    val canv = CanvasHandler(this)
+    val game = Game(this, canv)
 
     private val canvasMap: Map<String, Canvas> =
             mapOf<String, Canvas>(
@@ -43,14 +43,14 @@ class MainView() : View() {
 
     init {
 
-        //TODO CLEAN UP THIS FILE
-
         //currentStage?.isResizable = false
         currentStage?.minWidth = 800.0
         currentStage?.minHeight = 600.0
 
-        drawPieces(mainBoard, this)
-        drawBoardBackground(this)
+
+
+        canv.drawPieces(mainBoard)
+        canv.drawBoardBackground()
 
         anchor.widthProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, _: Number ->
@@ -64,14 +64,14 @@ class MainView() : View() {
 
 
         pieceCanvas.onMouseClicked = EventHandler {
-            clickEvents(it, this)
-            drawPieces(mainBoard, this)
+            game.clickEvents(it)
+            canv.drawPieces(mainBoard)
         }
 
         pieceCanvas.onMouseMoved = EventHandler {
             wipeCanvas(mouseHighlightCanvas)
-            val coords = determineBoardCoords(it.x, it.y, view = this)
-            highlightSquare(mouseHighlightCanvas, coords, 4, this)
+            val coords = game.determineBoardCoords(it.x, it.y)
+            canv.highlightSquare(mouseHighlightCanvas, coords, 4)
             //fillSquare(mouseHighlightCanvas, coords, rgb(0, 255, 125, 0.5))
         }
 
@@ -82,7 +82,7 @@ class MainView() : View() {
     @JvmName("setActiveSquare1")
     fun setActiveSquare(coords: IntArray) {
         activeSquare = coords
-        fillSquare(moveHighlightCanvas, coords, rgb(255, 255, 0, 0.5), this)
+        canv.fillSquare(moveHighlightCanvas, coords, rgb(255, 255, 0, 0.5))
     }
 
     fun unsetActiveSquare() {
@@ -91,12 +91,12 @@ class MainView() : View() {
     }
 
     private fun resizeActions() {
-        scaleCanvas(boardCanvas, anchor)
-        scaleCanvas(pieceCanvas, anchor)
-        scaleCanvas(mouseHighlightCanvas, anchor)
-        scaleCanvas(moveHighlightCanvas, anchor)
-        drawBoardBackground(this)
-        drawPieces(mainBoard, this)
+
+        for (canvas in canvasArray) {
+            canv.scaleCanvas(canvas, anchor)
+        }
+        canv.drawBoardBackground()
+        canv.drawPieces(mainBoard)
         update()
     }
 
@@ -121,7 +121,7 @@ class MainView() : View() {
         moveHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1.0
         mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1.0
 
-        drawPieces(mainBoard, this)
+        canv.drawPieces(mainBoard)
         wipeCanvas(moveHighlightCanvas)
         unsetActiveSquare()
     }
