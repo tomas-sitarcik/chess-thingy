@@ -61,9 +61,6 @@ class MainView : View() {
 
             if (checkCoords(coords)){
                 wipeCanvas(moveHighlightCanvas)
-                print(it.x)
-                print(" ")
-                println(it.y)
 
                 if (validMoves != null) {
                     for (move in validMoves!!) {
@@ -74,7 +71,6 @@ class MainView : View() {
                         }
                     }
                 }
-
 
                 if (!coords.contentEquals(activeSquare)) {
                     setActiveSquare(coords)
