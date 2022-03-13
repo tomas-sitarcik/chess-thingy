@@ -32,3 +32,33 @@ fun getPossibleMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out
         KING -> kingMoves(position, board)
     }
 }
+
+fun filterPossibleMoves(coords: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
+
+    var possibleMoves: Array<out IntArray>? = null
+
+    if (checkCoords(coords)) {
+        if (getPiece(coords, board) is Piece) {
+            var color = getPiece(coords, board)?.color
+            possibleMoves = getPossibleMoves(coords, board)
+            if (possibleMoves != null) {
+                for (move in possibleMoves) {
+                    if (color == getPiece(move, board)?.color) {
+                        move[0] = -1
+                        move[1] = -1
+                    }
+                }
+            }
+        }
+    }
+
+    if (possibleMoves == null) {
+        println("fuck")
+    }
+
+    return possibleMoves
+}
+
+fun checkCoords(coords: IntArray): Boolean {
+    return coords[0] in 0..7 && coords[1] in 0..7
+}

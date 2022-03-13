@@ -27,10 +27,13 @@ class MainView : View() {
     private var margin = boardCanvas.width * boardMargin
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
     private var squareSize = sizeActual / 8
-    private val mainBoard = initBoard()
-    private var activeSide = PieceColor.BLACK
+    private var mainBoard = initBoard()
+    private var activeSide = PieceColor.WHITE
     private var activeSquare: IntArray? = null
     private var validMoves: Array<out IntArray>? = null
+
+    private var turnStates: MutableMap<Int, Array<Array<Piece?>>> = mutableMapOf()
+    private var turnCount: Int = 0
 
 
     init {
@@ -41,8 +44,10 @@ class MainView : View() {
         currentStage?.minWidth = 800.0
         currentStage?.minHeight = 600.0
 
-        drawPieces(mainBoard)
+        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
         drawBoardBackground()
+
+        turnStates[0] = getCopyOfBoard(mainBoard)
 
         anchor.widthProperty().addListener(ChangeListener {
             _: ObservableValue<out Number>?, _: Number, _: Number ->
@@ -58,63 +63,45 @@ class MainView : View() {
         pieceCanvas.onMouseClicked = EventHandler {
 
             val coords = determineBoardCoords(it.x, it.y)
-
-            if (checkCoords(coords)){
-                wipeCanvas(moveHighlightCanvas)
-
-                if (validMoves != null) {
-                    for (move in validMoves!!) {
-                        if (coords.contentEquals(move)) {
-                            move(activeSquare!!, move, mainBoard)
-                            drawPieces(mainBoard)
-                            wipeCanvas(moveHighlightCanvas)
-                        }
+            var isPieceActiveColor: Boolean = false
+            if (checkCoords(coords)) {
+                isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeSide
+            }
+            var validMove = false
+            if (validMoves != null) { // check if the square clicked on would be a valid move
+                for (move in validMoves!!) {
+                    if (move.contentEquals(coords)) {
+                        validMove = true
                     }
-                }
-
-                if (!coords.contentEquals(activeSquare)) {
-                    setActiveSquare(coords)
-                }
-
-                if (activeSquare != null) {
-                    validMoves = filterPossibleMoves(activeSquare!!, mainBoard)
-                    fillMoves(filterPossibleMoves(activeSquare!!, mainBoard))
-                    setActiveSquare(activeSquare!!)
-
-
-                    if (validMoves != null) {
-                        for (move in validMoves!!) {
-                            if (coords.contentEquals(move)){
-                                move(activeSquare!!, move, mainBoard)
-                                drawPieces(mainBoard)
-                                wipeCanvas(moveHighlightCanvas)
-                            }
-                        }
-                    }
-
-                } else {
-                    fillMoves(filterPossibleMoves(coords, mainBoard))
-                    setActiveSquare(coords)
                 }
             }
 
+            if (activeSquare == null && isPieceActiveColor || !coords.contentEquals(activeSquare) && !validMove && isPieceActiveColor) {
+                // if there is no active square, or if the selected square is not a valid move
+                wipeCanvas(moveHighlightCanvas)
+                fillMoves(filterPossibleMoves(coords, mainBoard))
+                setActiveSquare(coords)
+                validMoves = filterPossibleMoves(activeSquare!!, mainBoard)
+            } else {
+                if (!activeSquare.contentEquals(coords)) {
+                    if (validMoves != null) {
+                        for (move in validMoves!!) {
+                            if (coords.contentEquals(move)) {
+                                move(activeSquare!!, move, mainBoard)
+                                drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+                                wipeCanvas(moveHighlightCanvas)
+                                flipActiveSide()
 
+                                activeSquare = null
+                                validMoves = null
+                                turnCount += 1
+                                turnStates[turnCount] = getCopyOfBoard(mainBoard)
+                            }
+                        }
+                    }
+                }
+            }
         }
-
-        /*
-        pieceCanvas.onDragDetected = EventHandler {
-            it.isPrimaryButtonDown
-            wipeCanvas(moveHighlightCanvas)
-            val coords = determineBoardCoords(it.x, it.y)
-            fillMoves(filterPossibleMoves(coords, mainBoard))
-            setActiveSquare(coords)
-        }
-
-        pieceCanvas.onDragDone = EventHandler {
-            move(activeSquare, determineBoardCoords(it.x, it.y), mainBoard)
-        }
-
-         */
 
         pieceCanvas.onMouseMoved = EventHandler {
             wipeCanvas(mouseHighlightCanvas)
@@ -122,38 +109,25 @@ class MainView : View() {
             highlightSquare(mouseHighlightCanvas, coords, 4)
             //fillSquare(mouseHighlightCanvas, coords, rgb(0, 255, 125, 0.5))
         }
-
-    }
-
-    private fun filterPossibleMoves(coords: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
-
-        var possibleMoves: Array<out IntArray>? = null
-
-        if (checkCoords(coords)) {
-            if (getPiece(coords, board) is Piece) {
-                var color = getPiece(coords, board)?.color
-                possibleMoves = getPossibleMoves(coords, board)
-                if (possibleMoves != null) {
-                    for (move in possibleMoves) {
-                        if (color == getPiece(move, board)?.color) {
-                            move[0] = -1
-                            move[1] = -1
-                        }
-                    }
-                }
-            }
-        }
-
-        if (possibleMoves == null) {
-            println("fuck")
-        }
-
-        return possibleMoves
     }
 
     private fun setActiveSquare(coords: IntArray) {
         activeSquare = coords
         fillSquare(moveHighlightCanvas, coords, rgb(255, 255, 0, 0.5))
+    }
+
+    private fun flipActiveSide() {
+
+        mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
+        moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
+
+        activeSide =
+        if (activeSide == PieceColor.WHITE) {
+            PieceColor.BLACK
+        } else {
+            PieceColor.WHITE
+        }
+        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
     }
 
     private fun fillMoves(moves: Array<out IntArray>?) {
@@ -167,29 +141,31 @@ class MainView : View() {
 
     }
 
-    private fun checkCoords(coords: IntArray): Boolean {
-        return coords[0] in 0..7 && coords[1] in 0..7
-    }
-
     private fun resizeActions() {
         scaleCanvas(boardCanvas)
         scaleCanvas(pieceCanvas)
         scaleCanvas(mouseHighlightCanvas)
+        scaleCanvas(moveHighlightCanvas)
         drawBoardBackground()
-        drawPieces(mainBoard)
+        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
         update()
     }
 
-    private fun determineBoardCoords(rawX: Double, rawY: Double): IntArray {
-        var xActual: Double = rawX - pieceCanvas.width * boardMargin
-        var yActual: Double = rawY - pieceCanvas.height * boardMargin
+    private fun determineBoardCoords(rawX: Double, rawY: Double, actual: Boolean = false): IntArray {
+        val xActual: Double = rawX - pieceCanvas.width * boardMargin
+        val yActual: Double = rawY - pieceCanvas.height * boardMargin
 
         var xCoord: Int = -1
         var yCoord: Int = -1
 
-        if (xActual / squareSize > 8 || yActual / squareSize > 8 || xActual / squareSize < 0 || yActual / squareSize < 0){
-            xActual = -1.0
-            yActual = -1.0
+        if (!(xActual / squareSize > 8 || yActual / squareSize > 8 || xActual / squareSize < 0 || yActual / squareSize < 0 && !actual)){
+            if (activeSide == PieceColor.BLACK) {
+                xCoord = (xActual / squareSize).toInt()
+                yCoord = (yActual / squareSize).toInt()
+            } else {
+                xCoord = (xActual / squareSize).toInt()
+                yCoord = 7 - (yActual / squareSize).toInt()
+            }
         } else {
             xCoord = (xActual / squareSize).toInt()
             yCoord = (yActual / squareSize).toInt()
@@ -230,38 +206,6 @@ class MainView : View() {
         canvas.graphicsContext2D.clearRect(0.0, 0.0, canvas.width, canvas.height)
     }
 
-    private fun drawPieces(board: Array<Array<Piece?>>) {
-        //TODO(later) OPTIMIZE MY GOD IS THIS SLOW (lesser priority now that the canvas is being scaled)
-
-        val origin = pieceCanvas.width * boardMargin
-        val gCon = pieceCanvas.graphicsContext2D
-
-        gCon.clearRect(0.0, 0.0, pieceCanvas.width, pieceCanvas.height)
-
-        var gBoard = Array(8) { Array<Piece?>(8) { null } }
-        if (activeSide == PieceColor.WHITE) { // reverses the board and makes the active side be the one on the bottom
-            for (i in 0..7) {
-                for (j in 0..7) {
-                    gBoard[j][7 - i] = board[j][i]
-                }
-            }
-        } else {
-            gBoard = board
-        }
-
-        for (i in 0..7) {
-            for (j in 0..7) {
-                if (gBoard[j][i] != null) {
-                    var temp = gBoard[j][i]
-                    if (temp != null) {
-                        gCon.drawImage(getPieceImage(temp.type, temp.color), origin + (j * squareSize), origin + (i * squareSize), squareSize, squareSize)
-                    }
-                }
-            }
-        }
-        pieceCanvas.toFront()
-    }
-
     private fun scaleCanvas(canvas: Canvas) {
 
         val desiredWidth = anchor.width - (anchor.width * xRatio * 2)
@@ -287,15 +231,14 @@ class MainView : View() {
 
     fun testA() {
 
-        drawPieces(mainBoard)
+        flipActiveSide()
+        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
 
-        println("pieces")
-        println("width " + pieceCanvas.width)
-        println("height " + pieceCanvas.height)
+    }
 
-        println("board")
-        println("width " + boardCanvas.width)
-        println("height " + boardCanvas.height)
+    fun why() {
+        mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
+        moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
     }
 
     private fun drawBoardBackground() {
@@ -333,6 +276,14 @@ class MainView : View() {
     }
 
     fun revertToRound(){
+        if (turnCount > 0) {
+            turnCount -= 1
+            mainBoard = turnStates[turnCount]!!
+
+            flipActiveSide()
+
+            drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+        }
 
     }
 

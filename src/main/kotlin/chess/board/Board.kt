@@ -34,6 +34,18 @@ fun getConsoleBoard(board: Array<Array<Piece?>>): Array<Array<String>> {
     return consoleBoard
 }
 
+fun getCopyOfBoard(board: Array<Array<Piece?>>): Array<Array<Piece?>> {
+    var newBoard = Array(8) { Array<Piece?>(8) { null } }
+
+    for (i in 0..7) {
+        for (j in 0..7) {
+            newBoard[i][j] = board[i][j]
+        }
+    }
+
+    return newBoard
+}
+
 fun getPrintableBoard(consoleBoard: Array<Array<String>>): String {
     val printableBoard = StringBuilder()
     for (row in consoleBoard) {
