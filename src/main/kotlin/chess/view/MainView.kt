@@ -4,6 +4,7 @@ import chess.board.*
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.scene.canvas.Canvas
+import javafx.scene.control.Label
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.paint.Color.*
@@ -19,6 +20,7 @@ class MainView : View() {
     private val moveHighlightCanvas : Canvas by fxid("moveHighlightCanvas")
     private val whiteMoves : javafx.scene.control.ListView<String> by fxid("listView1")
     private val blackMoves : javafx.scene.control.ListView<String> by fxid("listView2")
+    private val roundCounter: Label by fxid("roundCounter")
 
     private val xRatio: Double = 3.0/16.0
     private val yRatio: Double = 1.0/12.0
@@ -28,12 +30,14 @@ class MainView : View() {
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
     private var squareSize = sizeActual / 8
     private var mainBoard = initBoard()
-    private var activeSide = PieceColor.WHITE
+    private var activeSide = PieceColor.WHITE // i cant seem to be able to fix it, so its just gonna have to work like this
     private var activeSquare: IntArray? = null
     private var validMoves: Array<out IntArray>? = null
 
     private var turnStates: MutableMap<Int, Array<Array<Piece?>>> = mutableMapOf()
     private var turnCount: Int = 0
+
+    private var magic: Boolean = false
 
 
     init {
@@ -43,6 +47,10 @@ class MainView : View() {
         //currentStage?.isResizable = false
         currentStage?.minWidth = 800.0
         currentStage?.minHeight = 600.0
+
+        // mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
+        // moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
+        // doesn't work here for some reason ¯\_(ツ)_/¯
 
         drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
         drawBoardBackground()
@@ -76,7 +84,7 @@ class MainView : View() {
                 }
             }
 
-            if (activeSquare == null && isPieceActiveColor || !coords.contentEquals(activeSquare) && !validMove && isPieceActiveColor) {
+            if ((activeSquare == null  || !coords.contentEquals(activeSquare) && !validMove) && isPieceActiveColor) {
                 // if there is no active square, or if the selected square is not a valid move
                 wipeCanvas(moveHighlightCanvas)
                 fillMoves(filterPossibleMoves(coords, mainBoard))
@@ -87,15 +95,23 @@ class MainView : View() {
                     if (validMoves != null) {
                         for (move in validMoves!!) {
                             if (coords.contentEquals(move)) {
+
+                                // save the board state so it can be reverted to
+                                turnStates[turnCount] = getCopyOfBoard(mainBoard)
+                                //printBoard(mainBoard) // keep in mind that the colors are inverted if you are debugging with this
+                                turnCount += 1
+                                roundCounter.text = "Round $turnCount"
+
+                                // move, draw pieces, undraw move highlights
                                 move(activeSquare!!, move, mainBoard)
                                 drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
                                 wipeCanvas(moveHighlightCanvas)
                                 flipActiveSide()
 
+                                // make sure these are empty, would lead to weird things happening
                                 activeSquare = null
                                 validMoves = null
-                                turnCount += 1
-                                turnStates[turnCount] = getCopyOfBoard(mainBoard)
+
                             }
                         }
                     }
@@ -104,12 +120,25 @@ class MainView : View() {
         }
 
         pieceCanvas.onMouseMoved = EventHandler {
+
+            if (!magic) {
+                /**
+                    very bad and inelegant solution
+                    i wish i didn't have to do it like this but this is the only way i can change the scaleYs of the
+                    canvases, because when i change them in the init block it just doesn't work
+                */
+                mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
+                moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
+                magic = true
+            }
+
             wipeCanvas(mouseHighlightCanvas)
             val coords = determineBoardCoords(it.x, it.y)
             highlightSquare(mouseHighlightCanvas, coords, 4)
             //fillSquare(mouseHighlightCanvas, coords, rgb(0, 255, 125, 0.5))
         }
-    }
+
+    } //end of init
 
     private fun setActiveSquare(coords: IntArray) {
         activeSquare = coords
@@ -231,14 +260,11 @@ class MainView : View() {
 
     fun testA() {
 
-        flipActiveSide()
-        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
-
-    }
-
-    fun why() {
+        //flipActiveSide()
         mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
         moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
+        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+
     }
 
     private fun drawBoardBackground() {
@@ -277,8 +303,10 @@ class MainView : View() {
 
     fun revertToRound(){
         if (turnCount > 0) {
+            turnStates.remove(turnCount)
             turnCount -= 1
             mainBoard = turnStates[turnCount]!!
+            roundCounter.text = "Round $turnCount"
 
             flipActiveSide()
 

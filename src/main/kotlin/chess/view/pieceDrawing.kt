@@ -10,6 +10,11 @@ fun getPieceImage(type: PieceType, color: PieceColor): Image {
     //TODO add the actual piece images and their license (LOL)
 
     return when (color) {
+
+        /**
+         * piece colors are inverted, due to issues with not being able to modify the scale properties of
+         */
+
         PieceColor.BLACK -> when (type) {
             PieceType.KING -> Image("file:src/resources/images/pieces/black_king.png")
             PieceType.QUEEN -> Image("file:src/resources/images/pieces/black_queen.png")
