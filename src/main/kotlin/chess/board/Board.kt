@@ -83,7 +83,7 @@ fun move(position: IntArray, destination: IntArray, board: Array<Array<Piece?>>)
     setPiece(position, null, board)
 }
 
-/** legacy functions **/
+/** legacy functions (kinda) **/
 
 fun getPrintableBoard(consoleBoard: Array<Array<String>>): String {
     val printableBoard = StringBuilder()

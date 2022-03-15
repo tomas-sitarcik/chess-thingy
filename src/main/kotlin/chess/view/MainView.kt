@@ -30,14 +30,14 @@ class MainView : View() {
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
     private var squareSize = sizeActual / 8
     private var mainBoard = initBoard()
-    private var activeSide = PieceColor.WHITE // i cant seem to be able to fix it, so its just gonna have to work like this
+    private var activeSide = PieceColor.WHITE
     private var activeSquare: IntArray? = null
     private var validMoves: Array<out IntArray>? = null
 
     private var turnStates: MutableMap<Int, Array<Array<Piece?>>> = mutableMapOf()
     private var turnCount: Int = 0
 
-    private var magic: Boolean = false
+    private var magic: Boolean = false // forbidden variable
 
 
     init {
@@ -70,8 +70,10 @@ class MainView : View() {
 
         pieceCanvas.onMouseClicked = EventHandler {
 
+            //TODO create logic for situations where there is a check - it cant be that hard, can it? (lol)
+
             val coords = determineBoardCoords(it.x, it.y)
-            var isPieceActiveColor: Boolean = false
+            var isPieceActiveColor = false
             if (checkCoords(coords)) {
                 isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeSide
             }
@@ -147,6 +149,7 @@ class MainView : View() {
 
     private fun flipActiveSide() {
 
+        // flip the highlight layers along the Y axis
         mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
         moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
 
@@ -176,16 +179,17 @@ class MainView : View() {
         scaleCanvas(mouseHighlightCanvas)
         scaleCanvas(moveHighlightCanvas)
         drawBoardBackground()
-        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+        //drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
         update()
     }
 
     private fun determineBoardCoords(rawX: Double, rawY: Double, actual: Boolean = false): IntArray {
+        /** returns the actual board coordinate from the raw coordinates from the click MouseEvent **/
         val xActual: Double = rawX - pieceCanvas.width * boardMargin
         val yActual: Double = rawY - pieceCanvas.height * boardMargin
 
-        var xCoord: Int = -1
-        var yCoord: Int = -1
+        val xCoord: Int
+        val yCoord: Int
 
         if (!(xActual / squareSize > 8 || yActual / squareSize > 8 || xActual / squareSize < 0 || yActual / squareSize < 0 && !actual)){
             if (activeSide == PieceColor.BLACK) {
@@ -237,18 +241,31 @@ class MainView : View() {
 
     private fun scaleCanvas(canvas: Canvas) {
 
+        /** scales the passed canvas, making sure to not cause weird behaviour if one of them has a negative scale
+         *  this also bypasses the need to redraw the pieces everytime **/
+
         val desiredWidth = anchor.width - (anchor.width * xRatio * 2)
         val desiredHeight = anchor.height - (anchor.height * yRatio * 2)
+
+        val isYFlipped = canvas.scaleY < 0.0
 
         canvas.scaleX = desiredWidth / canvas.width
         canvas.scaleY = desiredHeight / canvas.height
 
         if (canvas.scaleX > canvas.scaleY) {
-            canvas.scaleX = canvas.scaleY
+                canvas.scaleX = canvas.scaleY
         } else {
-            canvas.scaleY = canvas.scaleX
+                canvas.scaleY = canvas.scaleX
         }
 
+        if (canvas.scaleX < 0.0) {
+            // just in case!
+            canvas.scaleX *= -1.0
+        }
+
+        if (isYFlipped) {
+            canvas.scaleY *= -1.0
+        }
     }
 
     private fun update() {
@@ -261,9 +278,11 @@ class MainView : View() {
     fun testA() {
 
         //flipActiveSide()
-        mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
-        moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
+        //mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
+        //moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
         drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+
+        //fillMoves(getSafeKingMoves(intArrayOf(4, 7), mainBoard))
 
     }
 
