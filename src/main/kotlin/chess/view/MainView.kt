@@ -73,47 +73,51 @@ class MainView : View() {
             //TODO create logic for situations where there is a check - it cant be that hard, can it? (lol)
 
             val coords = determineBoardCoords(it.x, it.y)
-            var isPieceActiveColor = false
-            if (checkCoords(coords)) {
-                isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeSide
-            }
-            var validMove = false
-            if (validMoves != null) { // check if the square clicked on would be a valid move
-                for (move in validMoves!!) {
-                    if (move.contentEquals(coords)) {
-                        validMove = true
+
+            if (coords[0] != -1 && coords[1] != -1) {
+
+                var isPieceActiveColor = false
+                if (checkCoords(coords)) {
+                    isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeSide
+                }
+                var validMove = false
+                if (validMoves != null) { // check if the square clicked on would be a valid move
+                    for (move in validMoves!!) {
+                        if (move.contentEquals(coords)) {
+                            validMove = true
+                        }
                     }
                 }
-            }
 
-            if ((activeSquare == null  || !coords.contentEquals(activeSquare) && !validMove) && isPieceActiveColor) {
-                // if there is no active square, or if the selected square is not a valid move
-                wipeCanvas(moveHighlightCanvas)
-                fillMoves(filterPossibleMoves(coords, mainBoard))
-                setActiveSquare(coords)
-                validMoves = filterPossibleMoves(activeSquare!!, mainBoard)
-            } else {
-                if (!activeSquare.contentEquals(coords)) {
-                    if (validMoves != null) {
-                        for (move in validMoves!!) {
-                            if (coords.contentEquals(move)) {
+                if ((activeSquare == null  || !coords.contentEquals(activeSquare) && !validMove) && isPieceActiveColor) {
+                    // if there is no active square, or if the selected square is not a valid move
+                    wipeCanvas(moveHighlightCanvas)
+                    fillMoves(filterPossibleMoves(coords, mainBoard))
+                    setActiveSquare(coords)
+                    validMoves = filterPossibleMoves(activeSquare!!, mainBoard)
+                } else {
+                    if (!activeSquare.contentEquals(coords)) {
+                        if (validMoves != null) {
+                            for (move in validMoves!!) {
+                                if (coords.contentEquals(move)) {
 
-                                // save the board state so it can be reverted to
-                                turnStates[turnCount] = getCopyOfBoard(mainBoard)
-                                //printBoard(mainBoard) // keep in mind that the colors are inverted if you are debugging with this
-                                turnCount += 1
-                                roundCounter.text = "Round $turnCount"
+                                    // save the board state so it can be reverted to
+                                    turnStates[turnCount] = getCopyOfBoard(mainBoard)
+                                    //printBoard(mainBoard) // keep in mind that the colors are inverted if you are debugging with this
+                                    turnCount += 1
+                                    roundCounter.text = "Round $turnCount"
 
-                                // move, draw pieces, undraw move highlights
-                                move(activeSquare!!, move, mainBoard)
-                                drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
-                                wipeCanvas(moveHighlightCanvas)
-                                flipActiveSide()
+                                    // move, draw pieces, undraw move highlights
+                                    move(activeSquare!!, move, mainBoard)
+                                    drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+                                    wipeCanvas(moveHighlightCanvas)
+                                    flipActiveSide()
 
-                                // make sure these are empty, would lead to weird things happening
-                                activeSquare = null
-                                validMoves = null
+                                    // make sure these are empty, would lead to weird things happening
+                                    activeSquare = null
+                                    validMoves = null
 
+                                }
                             }
                         }
                     }
@@ -136,8 +140,12 @@ class MainView : View() {
 
             wipeCanvas(mouseHighlightCanvas)
             val coords = determineBoardCoords(it.x, it.y)
-            highlightSquare(mouseHighlightCanvas, coords, 4)
-            //fillSquare(mouseHighlightCanvas, coords, rgb(0, 255, 125, 0.5))
+            if (coords[0] != -1 && coords[1] != -1) {
+                highlightSquare(mouseHighlightCanvas, coords, 4)
+                //fillSquare(mouseHighlightCanvas, coords, rgb(0, 255, 125, 0.5))
+
+                fillMoves(getSafeKingMoves(coords, mainBoard))
+            }
         }
 
     } //end of init
@@ -188,8 +196,8 @@ class MainView : View() {
         val xActual: Double = rawX - pieceCanvas.width * boardMargin
         val yActual: Double = rawY - pieceCanvas.height * boardMargin
 
-        val xCoord: Int
-        val yCoord: Int
+        var xCoord: Int = -1
+        var yCoord: Int = -1
 
         if (!(xActual / squareSize > 8 || yActual / squareSize > 8 || xActual / squareSize < 0 || yActual / squareSize < 0 && !actual)){
             if (activeSide == PieceColor.BLACK) {
@@ -199,9 +207,6 @@ class MainView : View() {
                 xCoord = (xActual / squareSize).toInt()
                 yCoord = 7 - (yActual / squareSize).toInt()
             }
-        } else {
-            xCoord = (xActual / squareSize).toInt()
-            yCoord = (yActual / squareSize).toInt()
         }
 
         return intArrayOf(xCoord, yCoord)
@@ -282,7 +287,8 @@ class MainView : View() {
         //moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
         drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
 
-        //fillMoves(getSafeKingMoves(intArrayOf(4, 7), mainBoard))
+        //fillMoves(getAllMovesForColor(PieceColor.BLACK, mainBoard).toTypedArray())
+
 
     }
 
