@@ -34,6 +34,8 @@ class MainView : View() {
     private var activeSquare: IntArray? = null
     private var validMoves: Array<out IntArray>? = null
 
+    private var fillColor: Color = rgb(0, 255, 125, 0.5) // yellowish
+
     private var turnStates: MutableMap<Int, Array<Array<Piece?>>> = mutableMapOf()
     private var turnCount: Int = 0
 
@@ -144,7 +146,7 @@ class MainView : View() {
                 highlightSquare(mouseHighlightCanvas, coords, 4)
                 //fillSquare(mouseHighlightCanvas, coords, rgb(0, 255, 125, 0.5))
 
-                fillMoves(getSafeKingMoves(coords, mainBoard))
+                fillMoves(getSafeKingMoves(coords, mainBoard), rgb(0, 255, 125, 0.5))
             }
         }
 
@@ -170,11 +172,13 @@ class MainView : View() {
         drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
     }
 
-    private fun fillMoves(moves: Array<out IntArray>?) {
+    private fun fillMoves(moves: Array<out IntArray>?, color: Color? = null) {
+
+        val usedColor: Color? = color ?: fillColor
 
         if (moves != null) {
             for (move in moves) {
-                fillSquare(moveHighlightCanvas, move, rgb(0, 255, 125, 0.5))
+                fillSquare(moveHighlightCanvas, move, usedColor!!)
             }
         }
         //fillSquare(moveHightlightCanvas, coords, rgb(255, 255, 0, 0.5))
@@ -287,8 +291,10 @@ class MainView : View() {
         //mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
         //moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
         drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
-
+        //fillColor = rgb(0, 0, 0, 0.0)
         //fillMoves(getAllMovesForColor(PieceColor.BLACK, mainBoard).toTypedArray())
+
+        //fillMoves(getAllMovesForColor(activeSide, mainBoard).toTypedArray())
 
 
     }
