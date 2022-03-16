@@ -72,7 +72,9 @@ fun getAllMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, excludeK
                 if (board[j][i]?.color == color) {
                     var tempMoves = filterPossibleMoves(intArrayOf(j, i), board)
                     for (move in tempMoves!!) {
-                        unfilteredPossibleMoves.add(move)
+                        if (checkCoords(move)) {
+                            unfilteredPossibleMoves.add(move)
+                        }
                     }
                 }
             }
@@ -110,13 +112,14 @@ fun getSafeKingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<Int
 
     val kingMoves = filterPossibleMoves(position, board)
 
-    if (kingMoves != null) {
-        for (move in kingMoves) {
-            if (allOpponentMoves?.find { !it.contentEquals(move) } != null) {
-                possibleMoves?.add(move)
-            }
+    if (allOpponentMoves != null) {
+        for (move in allOpponentMoves){
+            //printMove(move)
         }
     }
+
+
+    possibleMoves = kingMoves?.let { applyMaskToMoves(allOpponentMoves, it) }
 
     println("wrorking")
 
@@ -128,6 +131,24 @@ fun getSafeKingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<Int
 
     return possibleMoves?.toTypedArray()
 }
+
+fun applyMaskToMoves(moves: ArrayList<IntArray>?, mask: Array<out IntArray>): ArrayList<IntArray>? {
+    var filteredMoves: ArrayList<IntArray>? = null
+
+    if (moves != null && mask != null){
+        for (move in moves) {
+            for (maskMove in mask) {
+                if (move.contentEquals(maskMove)) {
+                    filteredMoves?.add(move)
+                }
+            }
+        }
+    }
+
+    return filteredMoves
+
+}
+
 
 fun checkCoords(coords: IntArray): Boolean {
     return coords[0] in 0..7 && coords[1] in 0..7

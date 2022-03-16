@@ -58,7 +58,7 @@ fun initBoard(): Array<Array<Piece?>> {
 
 fun getCopyOfBoard(board: Array<Array<Piece?>>): Array<Array<Piece?>> {
     // creates an independent copy of a board
-    var newBoard = Array(8) { Array<Piece?>(8) { null } }
+    val newBoard = Array(8) { Array<Piece?>(8) { null } }
 
     for (i in 0..7) {
         for (j in 0..7) {

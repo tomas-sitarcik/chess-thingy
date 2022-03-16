@@ -226,6 +226,7 @@ class MainView : View() {
             gCon.clearRect(origin + (coords[0] * squareSize), origin + (coords[1] * squareSize), squareSize, squareSize)
         }
     }
+    //end of init
 
     private fun fillSquare(canvas: Canvas, coords: IntArray, highlightColor: Color) {
         if (coords[0] >= 0 && coords[1] >= 0){
