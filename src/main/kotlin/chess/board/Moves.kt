@@ -21,7 +21,7 @@ fun getDiagonalDistances(position: IntArray): IntArray {
     return diagonalDistances
 }
 
-fun getPossibleMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
+fun getMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
     val piece = board[position[0]][position[1]] ?: return null
     return when (piece.type) {
         PAWN -> pawnMoves(position, board, piece.color)
@@ -33,14 +33,14 @@ fun getPossibleMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out
     }
 }
 
-fun filterPossibleMoves(coords: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
+fun getPossibleMoves(coords: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
 
     var possibleMoves: Array<out IntArray>? = null
 
     if (checkCoords(coords)) {
         if (getPiece(coords, board) is Piece) {
             var color = getPiece(coords, board)?.color
-            possibleMoves = getPossibleMoves(coords, board)
+            possibleMoves = getMoves(coords, board)
             if (possibleMoves != null) {
                 for (move in possibleMoves) {
                     if (color == getPiece(move, board)?.color) {
@@ -61,7 +61,7 @@ fun filterPossibleMoves(coords: IntArray, board: Array<Array<Piece?>>): Array<ou
 
 fun getAllMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, excludeKing: Boolean = false): ArrayList<IntArray> {
 
-    /** returns all legal moves for all pieces of the given color (even the pawn possible capture moves after i fix it) **/
+    /** returns all legal moves for all pieces of the given color **/
 
     var unfilteredPossibleMoves: ArrayList<IntArray> = arrayListOf()
 
@@ -71,7 +71,7 @@ fun getAllMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, excludeK
             val piece: Piece? = getPiece(intArrayOf(j, i), board)
             if (piece != null) {
                 if (piece?.color == color) {
-                    val tempMoves = filterPossibleMoves(intArrayOf(j, i), board)
+                    val tempMoves = getPossibleMoves(intArrayOf(j, i), board)
                     for (move in tempMoves!!) {
                         if (checkCoords(move)) {
                             unfilteredPossibleMoves.add(move)
@@ -79,8 +79,8 @@ fun getAllMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, excludeK
                     }
 
                     if (piece.type == PAWN) {
-                        /** adds the capture moves to the possible moves, because they don't function on normal move basis
-                         *  checks if the square they're looking at is irrelevant in this context
+                        /** adds the capture moves to the possible moves, because they don't function on normal move
+                         *  basis, checks if the square they're looking at is null or not is irrelevant in this context
                          */
                         if (color == PieceColor.WHITE) {
                             if (i < 7){
@@ -136,7 +136,7 @@ fun getSafeKingMoves(position: IntArray, boardInput: Array<Array<Piece?>>): Arra
     var allOpponentMoves: ArrayList<IntArray>? = null
 
     val board = getCopyOfBoard(boardInput)
-    val kingMoves = filterPossibleMoves(position, board)
+    val kingMoves = getPossibleMoves(position, board)
 
     board[position[0]][position[1]] = null
 
@@ -145,22 +145,8 @@ fun getSafeKingMoves(position: IntArray, boardInput: Array<Array<Piece?>>): Arra
         allOpponentMoves = getAllMovesForColor(flipColor(kingColor), board)
     }
 
-
-
-    if (allOpponentMoves != null) {
-        for (move in allOpponentMoves){
-            //printMove(move)
-        }
-    }
-
     if (kingMoves != null) {
-        possibleMoves = applyMaskToMoves(applyMaskToMoves(allOpponentMoves, kingMoves, false), kingMoves)
-    }
-
-    if (possibleMoves != null) {
-        for (move in possibleMoves){
-            printMove(move)
-        }
+        possibleMoves = applyMaskToMoves(applyMaskToMoves(allOpponentMoves, kingMoves), kingMoves)
     }
 
     return possibleMoves?.toTypedArray()

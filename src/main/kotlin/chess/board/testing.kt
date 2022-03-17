@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
     }
 
     fun printMoves(position: IntArray, board: Array<Array<Piece?>>): Unit? {
-        val moves = getPossibleMoves(position, board)
+        val moves = getMoves(position, board)
         if (moves == null) {
             print("failed")
             return null

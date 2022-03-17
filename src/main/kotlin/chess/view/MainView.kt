@@ -94,9 +94,9 @@ class MainView : View() {
                 if ((activeSquare == null  || !coords.contentEquals(activeSquare) && !validMove) && isPieceActiveColor) {
                     // if there is no active square, or if the selected square is not a valid move
                     wipeCanvas(moveHighlightCanvas)
-                    fillMoves(filterPossibleMoves(coords, mainBoard))
+                    fillMoves(getPossibleMoves(coords, mainBoard))
                     setActiveSquare(coords)
-                    validMoves = filterPossibleMoves(activeSquare!!, mainBoard)
+                    validMoves = getPossibleMoves(activeSquare!!, mainBoard)
                 } else {
                     if (!activeSquare.contentEquals(coords)) {
                         if (validMoves != null) {
