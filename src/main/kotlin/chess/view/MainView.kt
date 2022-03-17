@@ -76,17 +76,16 @@ class MainView : View() {
 
             val coords = determineBoardCoords(it.x, it.y)
 
-            if (coords[0] != -1 && coords[1] != -1) {
+            if (checkCoords(coords)) {
 
                 var isPieceActiveColor = false
-                if (checkCoords(coords)) {
-                    isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeSide
-                }
+                isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeSide
                 var validMove = false
                 if (validMoves != null) { // check if the square clicked on would be a valid move
                     for (move in validMoves!!) {
                         if (move.contentEquals(coords)) {
                             validMove = true
+                            break
                         }
                     }
                 }
@@ -94,9 +93,20 @@ class MainView : View() {
                 if ((activeSquare == null  || !coords.contentEquals(activeSquare) && !validMove) && isPieceActiveColor) {
                     // if there is no active square, or if the selected square is not a valid move
                     wipeCanvas(moveHighlightCanvas)
-                    fillMoves(getPossibleMoves(coords, mainBoard))
                     setActiveSquare(coords)
-                    validMoves = getPossibleMoves(activeSquare!!, mainBoard)
+                    val piece = getPiece(activeSquare!!, mainBoard)
+
+                    validMoves =
+                    if (piece?.type == PieceType.KING) {
+                        getSafeKingMoves(activeSquare!!, mainBoard)
+
+                    } else {
+                        getPossibleMoves(activeSquare!!, mainBoard)
+                    }
+
+                    fillMoves(validMoves)
+                    //fillMoves(getAllMovesForColor(PieceColor.BLACK, mainBoard).toTypedArray())
+
                 } else {
                     if (!activeSquare.contentEquals(coords)) {
                         if (validMoves != null) {
@@ -119,6 +129,7 @@ class MainView : View() {
                                     activeSquare = null
                                     validMoves = null
 
+                                    break
                                 }
                             }
                         }
@@ -142,11 +153,11 @@ class MainView : View() {
 
             wipeCanvas(mouseHighlightCanvas)
             val coords = determineBoardCoords(it.x, it.y)
-            if (coords[0] != -1 && coords[1] != -1) {
+            if (checkCoords(coords)) {
                 highlightSquare(mouseHighlightCanvas, coords, 4)
                 //fillSquare(mouseHighlightCanvas, coords, rgb(0, 255, 125, 0.5))
 
-                fillMoves(getSafeKingMoves(coords, mainBoard), rgb(0, 255, 125, 0.5))
+                //fillMoves(getSafeKingMoves(coords, mainBoard), rgb(0, 255, 255, 0.5))
             }
         }
 

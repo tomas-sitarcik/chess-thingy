@@ -133,34 +133,54 @@ fun getSafeKingMoves(position: IntArray, boardInput: Array<Array<Piece?>>): Arra
     }
 
     val kingColor = getPiece(position, boardInput)?.color
-    var allOpponentMoves: ArrayList<IntArray>? = null
-
     val board = getCopyOfBoard(boardInput)
     val kingMoves = getPossibleMoves(position, board)
+    val kingMovesCopy = getPossibleMoves(position, board)
+    var allOpponentMoves: ArrayList<IntArray>? = null
+    var possibleMoves: ArrayList<IntArray>? = null
+    var illegalMoves: ArrayList<IntArray>? = null
 
     board[position[0]][position[1]] = null
 
-    var possibleMoves: ArrayList<IntArray>? = null
     if (kingColor != null) {
         allOpponentMoves = getAllMovesForColor(flipColor(kingColor), board)
     }
 
     if (kingMoves != null) {
-        possibleMoves = applyMaskToMoves(applyMaskToMoves(allOpponentMoves, kingMoves), kingMoves)
+        illegalMoves = applyMaskToMoves(kingMoves.toCollection(ArrayList()), allOpponentMoves!!)
+
+        possibleMoves = applyMaskToMoves(kingMoves.toCollection(ArrayList()), illegalMoves, true)
+
+            if (possibleMoves == null) {
+
+            }
     }
 
-    return possibleMoves?.toTypedArray()
+    return possibleMoves!!.toTypedArray()
 }
 
-fun applyMaskToMoves(moves: ArrayList<IntArray>?, mask: Array<out IntArray>, negative: Boolean = false): ArrayList<IntArray>? {
-    var filteredMoves: ArrayList<IntArray>? = arrayListOf()
+fun applyMaskToMoves(moves: ArrayList<IntArray>, mask: ArrayList<IntArray>?, negative: Boolean = false): ArrayList<IntArray>? {
+    val filteredMoves: ArrayList<IntArray>? = arrayListOf()
 
-    if (moves != null){
-        for (move in moves) {
+    if (mask?.size == 0) {
+        for (thing in moves) {
+            printMove(thing)
+        }
+        return moves
+    }
+
+    for (move in moves) {
+        if (checkCoords(move) && mask != null) {
             for (maskMove in mask) {
-                if (checkCoords(maskMove)) {
-                    if (move.contentEquals(maskMove) == !negative) {
-                        filteredMoves?.add(move)
+                if (move.contentEquals(maskMove) == !negative && filteredMoves?.find { it.contentEquals(move) } == null) {
+                    if (negative) {
+                        if (mask.find { it.contentEquals(move) } == null) {
+                            filteredMoves!!.add(move)
+                            break
+                        }
+                    } else {
+                        filteredMoves!!.add(move)
+                        break
                     }
                 }
             }
