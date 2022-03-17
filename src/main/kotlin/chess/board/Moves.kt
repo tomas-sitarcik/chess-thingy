@@ -157,7 +157,8 @@ fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): 
 fun getCheckResolvingMoves(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray>? {
 
     /** TODO FINISH THE FUNCTION
-     * returns a list of moves that will resolve a check **/
+     * returns a list of moves that will resolve a check
+     * this list(array or array, idk) will then be input into MainView and searched in for showing/trying to make a move**/
 
     val possibleMoves = getSafeKingMoves(findKing(color, board), board)
     val allyMoves = getAllMovesForColor(color, board)
