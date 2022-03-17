@@ -302,6 +302,8 @@ class MainView : View() {
         //mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
         //moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
         drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+
+        fillMoves(getCheckResolvingMoves(PieceColor.WHITE, mainBoard)?.toTypedArray())
         //fillColor = rgb(0, 0, 0, 0.0)
         //fillMoves(getAllMovesForColor(PieceColor.BLACK, mainBoard).toTypedArray())
 

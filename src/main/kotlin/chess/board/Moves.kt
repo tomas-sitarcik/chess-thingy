@@ -70,15 +70,17 @@ fun getAllMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, excludeK
         for (j in 0..7) {
             val piece: Piece? = getPiece(intArrayOf(j, i), board)
             if (piece != null) {
-                if (piece?.color == color) {
-                    val tempMoves = getPossibleMoves(intArrayOf(j, i), board)
-                    for (move in tempMoves!!) {
-                        if (checkCoords(move)) {
-                            unfilteredPossibleMoves.add(move)
-                        }
-                    }
+                if (piece.color == color) {
+                    if (piece.type != PAWN) {
+                        val tempMoves = getPossibleMoves(intArrayOf(j, i), board)
 
-                    if (piece.type == PAWN) {
+
+                        for (move in tempMoves!!) {
+                            if (checkCoords(move)) {
+                                unfilteredPossibleMoves.add(move)
+                            }
+                        }
+                    } else {
                         /** adds the capture moves to the possible moves, because they don't function on normal move
                          *  basis, checks if the square they're looking at is null or not is irrelevant in this context
                          */
@@ -121,26 +123,23 @@ fun getAllMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, excludeK
     return possibleMoves
 }
 
-fun getSafeKingMoves(position: IntArray, boardInput: Array<Array<Piece?>>): Array<IntArray>? {
-    //TODO finish the function
+fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): Array<IntArray>? {
 
-    /** CURRENTLY RETURNS THE MOVES THAT ARE NOT VALID
-     *  this function is called when a check is detected and it will provide the valid moves that will result
-     *  in the king being "unchecked" **/
+    /** provides proper check safe movement for the king and a partial check resolving ability - only king move wise **/
 
-    if (getPiece(position, boardInput)?.type != KING) {
+    if (getPiece(kingPosition, boardInput)?.type != KING) {
         return null
     }
 
-    val kingColor = getPiece(position, boardInput)?.color
+    val kingColor = getPiece(kingPosition, boardInput)?.color
     val board = getCopyOfBoard(boardInput)
-    val kingMoves = getPossibleMoves(position, board)
-    val kingMovesCopy = getPossibleMoves(position, board)
+    val kingMoves = getPossibleMoves(kingPosition, board)
+    val kingMovesCopy = getPossibleMoves(kingPosition, board)
     var allOpponentMoves: ArrayList<IntArray>? = null
     var possibleMoves: ArrayList<IntArray>? = null
     var illegalMoves: ArrayList<IntArray>? = null
 
-    board[position[0]][position[1]] = null
+    board[kingPosition[0]][kingPosition[1]] = null
 
     if (kingColor != null) {
         allOpponentMoves = getAllMovesForColor(flipColor(kingColor), board)
@@ -150,17 +149,41 @@ fun getSafeKingMoves(position: IntArray, boardInput: Array<Array<Piece?>>): Arra
         illegalMoves = applyMaskToMoves(kingMoves.toCollection(ArrayList()), allOpponentMoves!!)
 
         possibleMoves = applyMaskToMoves(kingMoves.toCollection(ArrayList()), illegalMoves, true)
-
-            if (possibleMoves == null) {
-
-            }
     }
 
     return possibleMoves!!.toTypedArray()
 }
 
+fun getCheckResolvingMoves(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray>? {
+
+    /** TODO FINISH THE FUNCTION
+     * returns a list of moves that will resolve a check **/
+
+    val possibleMoves = getSafeKingMoves(findKing(color, board), board)
+    val allyMoves = getAllMovesForColor(color, board)
+    val opponentMoves = getAllMovesForColor(flipColor(color), board)
+
+    val overlappingMoves = applyMaskToMoves(allyMoves, opponentMoves)
+
+    return overlappingMoves
+}
+
+fun findKing(color: PieceColor, board: Array<Array<Piece?>>): IntArray {
+
+    for (i in 0..7) {
+        for (j in 0..7) {
+            if (board[j][i]?.type == KING && board[j][i]?.color == color) {
+                return intArrayOf(j, i)
+            }
+        }
+    }
+
+    return intArrayOf(-1, -1)
+
+}
+
 fun applyMaskToMoves(moves: ArrayList<IntArray>, mask: ArrayList<IntArray>?, negative: Boolean = false): ArrayList<IntArray>? {
-    val filteredMoves: ArrayList<IntArray>? = arrayListOf()
+    val filteredMoves: ArrayList<IntArray> = arrayListOf()
 
     if (mask?.size == 0) {
         for (thing in moves) {
@@ -172,14 +195,14 @@ fun applyMaskToMoves(moves: ArrayList<IntArray>, mask: ArrayList<IntArray>?, neg
     for (move in moves) {
         if (checkCoords(move) && mask != null) {
             for (maskMove in mask) {
-                if (move.contentEquals(maskMove) == !negative && filteredMoves?.find { it.contentEquals(move) } == null) {
+                if (move.contentEquals(maskMove) == !negative && filteredMoves.find { it.contentEquals(move) } == null) {
                     if (negative) {
                         if (mask.find { it.contentEquals(move) } == null) {
-                            filteredMoves!!.add(move)
+                            filteredMoves.add(move)
                             break
                         }
                     } else {
-                        filteredMoves!!.add(move)
+                        filteredMoves.add(move)
                         break
                     }
                 }
@@ -189,7 +212,6 @@ fun applyMaskToMoves(moves: ArrayList<IntArray>, mask: ArrayList<IntArray>?, neg
 
     return filteredMoves
 }
-
 
 fun checkCoords(coords: IntArray): Boolean {
     return coords[0] in 0..7 && coords[1] in 0..7
