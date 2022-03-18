@@ -71,7 +71,6 @@ fun getAllMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, excludeK
             val piece: Piece? = getPiece(intArrayOf(j, i), board)
             if (piece != null) {
                 if (piece.color == color) {
-                    if (piece.type != PAWN) {
                         val tempMoves = getPossibleMoves(intArrayOf(j, i), board)
 
 
@@ -80,10 +79,7 @@ fun getAllMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, excludeK
                                 unfilteredPossibleMoves.add(move)
                             }
                         }
-                    } else {
-                        /** adds the capture moves to the possible moves, because they don't function on normal move
-                         *  basis, checks if the square they're looking at is null or not is irrelevant in this context
-                         */
+                    if (piece.type == PAWN) {
                         if (color == PieceColor.WHITE) {
                             if (i < 7){
                                 if (j < 7) {
@@ -166,6 +162,12 @@ fun getCheckResolvingMoves(color: PieceColor, board: Array<Array<Piece?>>): Arra
 
     val overlappingMoves = applyMaskToMoves(allyMoves, opponentMoves)
 
+    for (move in allyMoves) {
+        if (getPiece(move, board)?.color != flipColor(color)) {
+            overlappingMoves?.add(move)
+        }
+    }
+
     return overlappingMoves
 }
 
@@ -180,6 +182,12 @@ fun findKing(color: PieceColor, board: Array<Array<Piece?>>): IntArray {
     }
 
     return intArrayOf(-1, -1)
+
+}
+
+fun checkForCheck(color: PieceColor, board: Array<Array<Piece?>>): Boolean {
+
+    return getAllMovesForColor(flipColor(color), board).find { it.contentEquals(findKing(color, board)) } != null
 
 }
 

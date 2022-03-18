@@ -33,6 +33,7 @@ class MainView : View() {
     private var activeSide = PieceColor.WHITE
     private var activeSquare: IntArray? = null
     private var validMoves: Array<out IntArray>? = null
+    private var checkState = null
 
     private var fillColor: Color = rgb(0, 255, 125, 0.5) // yellowish
 
