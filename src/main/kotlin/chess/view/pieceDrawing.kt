@@ -11,10 +11,6 @@ fun getPieceImage(type: PieceType, color: PieceColor): Image {
 
     return when (color) {
 
-        /**
-         * piece colors are inverted, due to issues with not being able to modify the scale properties of
-         */
-
         PieceColor.BLACK -> when (type) {
             PieceType.KING -> Image("file:src/resources/images/pieces/black_king.png")
             PieceType.QUEEN -> Image("file:src/resources/images/pieces/black_queen.png")
@@ -36,15 +32,19 @@ fun getPieceImage(type: PieceType, color: PieceColor): Image {
 }
 
 fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceColor, boardMargin: Double, squareSize: Double) {
-    //TODO(later) OPTIMIZE MY GOD IS THIS SLOW (lesser priority now that the canvas is being scaled)
+
+    /** draws the pieces onto the board, according to the given board, and other properties this is a quite
+     *  expensive function - computationally which is why resizing of the board is handled through scaling **/
 
     val origin = canvas.width * boardMargin
     val gCon = canvas.graphicsContext2D
 
     gCon.clearRect(0.0, 0.0, canvas.width, canvas.height)
 
+    /** modifies the board depending on the active side **/
+
     var gBoard = Array(8) { Array<Piece?>(8) { null } }
-    if (activeSide == PieceColor.WHITE) { // reverses the board and makes the active side be the one on the bottom
+    if (activeSide == PieceColor.WHITE) {
         for (i in 0..7) {
             for (j in 0..7) {
                 gBoard[j][7 - i] = board[j][i]
@@ -64,5 +64,6 @@ fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceCol
             }
         }
     }
-    canvas.toFront()
+
+    canvas.toFront() // probably not necessary, but just in case
 }

@@ -2,8 +2,8 @@ package chess.board
 
 import java.lang.StringBuilder
 
-/**
- * DONT FORGET
+/** DONT FORGET
+ *
  * [
  *   [ROOK, PAWN, ----, ----, ----, ----, PAWN, ROOK]
  *   [KNIGHT, PAWN, ----, ----, ----, ----, PAWN, KNIGHT]
@@ -14,13 +14,13 @@ import java.lang.StringBuilder
  *   [KNIGHT, PAWN, ----, ----, ----, ----, PAWN, KNIGHT]
  *   [ROOK, PAWN, ----, ----, ----, ----, PAWN, ROOK]
  * ]
- * THIS IS THE REAL SHAPE
- */
+ *
+ * THIS IS THE REAL SHAPE **/
 
 
 
-// works kinda funky but allows more intuitive access of the pieces with board[x][y] as opposed to having
-// to use board[y][x] there is probably a better, more elegant way to do this... TOO BAD!
+/** works kinda funky but allows more intuitive access of the pieces with board[x][y] as opposed to having
+to use board[y][x] there is probably a better, more elegant way to do this... TOO BAD! **/
 
 fun initBoard(): Array<Array<Piece?>> {
     val board = Array(8) { Array<Piece?>(8) { null } }
@@ -57,7 +57,7 @@ fun initBoard(): Array<Array<Piece?>> {
 }
 
 fun getCopyOfBoard(board: Array<Array<Piece?>>): Array<Array<Piece?>> {
-    // creates an independent copy of a board
+    /** get a non-linked copy of a board for storage and other operations **/
     val newBoard = Array(8) { Array<Piece?>(8) { null } }
 
     for (i in 0..7) {

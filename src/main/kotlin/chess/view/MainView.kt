@@ -136,34 +136,34 @@ class MainView : View() {
                     fillMoves(validMoves)
 
                 } else {
-                    if (!activeSquare.contentEquals(coords)) {
-                        if (validMoves != null) {
-                            for (move in validMoves!!) {
-                                if (coords.contentEquals(move)) {
-                                    if (checkState && getPiece(activeSquare!!, mainBoard)?.type != PieceType.KING) {
-                                        if (checkStateValidMoves?.find { it.contentEquals(move) } == null) {
-                                            break
-                                        }
+                    /** not clicking on the active square, and validMoves are not null **/
+                    if (!activeSquare.contentEquals(coords) && validMoves != null) {
+                        for (move in validMoves!!) {
+                            if (coords.contentEquals(move)) {
+                                /** TODO EXPLAIN THIS **/
+                                if (checkState && getPiece(activeSquare!!, mainBoard)?.type != PieceType.KING) {
+                                    if (checkStateValidMoves?.find { it.contentEquals(move) } == null) {
+                                        break
                                     }
-
-                                    // save the board state so it can be reverted to
-                                    turnStates[turnCount] = getCopyOfBoard(mainBoard)
-                                    turnCount += 1
-                                    roundCounter.text = "Round $turnCount"
-
-                                    // move, draw pieces, undraw move highlights
-                                    move(activeSquare!!, move, mainBoard)
-                                    drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
-                                    wipeCanvas(moveHighlightCanvas)
-                                    flipActiveSide()
-
-                                    // make sure these are empty, would lead to weird things happening
-                                    activeSquare = null
-                                    validMoves = null
-                                    checkStateValidMoves = null
-
-                                    break
                                 }
+
+                                /** save the board state so it can be reverted to **/
+                                turnStates[turnCount] = getCopyOfBoard(mainBoard)
+                                turnCount += 1
+                                roundCounter.text = "Round $turnCount"
+
+                                /** move, draw pieces, undraw move highlights **/
+                                move(activeSquare!!, move, mainBoard)
+                                drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
+                                wipeCanvas(moveHighlightCanvas)
+                                flipActiveSide()
+
+                                /** make sure these are empty, would lead to weird things happening **/
+                                activeSquare = null
+                                validMoves = null
+                                checkStateValidMoves = null
+
+                                break
                             }
                         }
                     }
@@ -184,6 +184,8 @@ class MainView : View() {
                 magic = true
             }
 
+            /** handles the currently hovered over square to be highlighted **/
+
             wipeCanvas(mouseHighlightCanvas)
             val coords = determineBoardCoords(it.x, it.y)
             if (checkCoords(coords)) {
@@ -203,16 +205,18 @@ class MainView : View() {
 
     private fun flipActiveSide() {
 
-        // flip the highlight layers along the Y axis
+        /** flip the highlight layers along the Y axis **/
         mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
         moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
 
+        /** flip the colors **/
         activeColor =
         if (activeColor == PieceColor.WHITE) {
             PieceColor.BLACK
         } else {
             PieceColor.WHITE
         }
+
         drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
     }
 
@@ -230,6 +234,9 @@ class MainView : View() {
     }
 
     private fun resizeActions() {
+
+        /** scale canvases, redraw the background, and update all the properties **/
+
         scaleCanvas(boardCanvas)
         scaleCanvas(pieceCanvas)
         scaleCanvas(mouseHighlightCanvas)
@@ -240,7 +247,9 @@ class MainView : View() {
     }
 
     private fun determineBoardCoords(rawX: Double, rawY: Double, actual: Boolean = false): IntArray {
+
         /** returns the actual board coordinate from the raw coordinates from the click MouseEvent **/
+
         val xActual: Double = rawX - pieceCanvas.width * boardMargin
         val yActual: Double = rawY - pieceCanvas.height * boardMargin
 
@@ -296,7 +305,7 @@ class MainView : View() {
     private fun scaleCanvas(canvas: Canvas) {
 
         /** scales the passed canvas, making sure to not cause weird behaviour if one of them has a negative scale
-         *  this also bypasses the need to redraw the pieces everytime **/
+         *  this also bypasses the need to redraw the pieces every time **/
 
         val desiredWidth = anchor.width - (anchor.width * xRatio * 2)
         val desiredHeight = anchor.height - (anchor.height * yRatio * 2)
@@ -341,7 +350,6 @@ class MainView : View() {
         //fillMoves(getAllMovesForColor(PieceColor.BLACK, mainBoard).toTypedArray())
 
         //fillMoves(getAllMovesForColor(activeSide, mainBoard).toTypedArray())
-
 
     }
 

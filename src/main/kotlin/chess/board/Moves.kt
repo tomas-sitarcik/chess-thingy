@@ -214,6 +214,9 @@ fun checkForCheck(color: PieceColor, board: Array<Array<Piece?>>): Boolean {
 }
 
 fun applyMaskToMoves(moves: ArrayList<IntArray>, mask: ArrayList<IntArray>?, negative: Boolean = false): ArrayList<IntArray>? {
+
+    /** applies a mask on an arrayList of moves, optionally applies the mask as a negative one **/
+
     val filteredMoves: ArrayList<IntArray> = arrayListOf()
 
     if (mask?.size == 0) {
@@ -245,6 +248,9 @@ fun applyMaskToMoves(moves: ArrayList<IntArray>, mask: ArrayList<IntArray>?, neg
 }
 
 fun tryMoveOut(position: IntArray, move: IntArray, color: PieceColor, board: Array<Array<Piece?>>): Boolean {
+
+    /** "checks out" (get it) if the given move would cause the king to get checked **/
+
     val newBoard = getCopyOfBoard(board)
 
     move(position, move, newBoard)

@@ -4,9 +4,8 @@ import chess.board.PieceColor.*
 
 /**
  * [[x1,y1], [x2, y2], ...]
- * legal moves returned will also include capture moves
- * another method outside of this will take care of
- * capture logic, because of the exception that are checks and en passants (fun)
+ * legal moves returned also include capture moves - they are not distinguished in any way
+ * => capture logic, checks and such are handled outside
  */
 
 fun kingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
@@ -53,12 +52,11 @@ fun kingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArr
 }
 
 fun queenMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
-    return getMovesFromHorizontalDistances(position, board)?.
-    plus(getMovesFromDiagonalDistances(position, board))
+    return getCardinalMoves(position, board)?.plus(getDiagonalMoves(position, board))
 }
 
 fun bishopMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
-    return getMovesFromDiagonalDistances(position, board)
+    return getDiagonalMoves(position, board)
 }
 
 fun knightMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
@@ -124,11 +122,14 @@ fun knightMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntA
 }
 
 fun rookMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
-    return getMovesFromHorizontalDistances(position, board)
+    return getCardinalMoves(position, board)
 }
 
-//en passant capturing not handled here :D
+
 fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>, color: PieceColor): Array<out IntArray>? {
+
+    /** provides the possible moves - en passant moves excluded **/
+
     val moves = ArrayList<IntArray>(4)
     val x = position[0]
     val y = position[1]
@@ -194,10 +195,12 @@ fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>, color: PieceColor
 }
 
 //generates a list of legal moves according to the horizontal distances
-fun getMovesFromHorizontalDistances(
+fun getCardinalMoves(
     position: IntArray,
     board: Array<Array<Piece?>>):
         Array<IntArray>? {
+
+    /** performs a simple raycast from the given square in every cardinal direction **/
 
     val distances = getHorizontalDistances(position)
     val moves = ArrayList<IntArray>(14)
@@ -264,11 +267,12 @@ fun getMovesFromHorizontalDistances(
 }
 
 //generates a list of legal moves according to the diagonal distances
-fun getMovesFromDiagonalDistances(
+fun getDiagonalMoves(
     position: IntArray,
     board: Array<Array<Piece?>>):
         Array<out IntArray> {
 
+    /** performs a simple raycast from the give square in every diagonal direction **/
 
     val distances = getDiagonalDistances(position)
     val moves = ArrayList<IntArray>(14)
