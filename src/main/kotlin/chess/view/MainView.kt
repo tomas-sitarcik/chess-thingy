@@ -8,6 +8,7 @@ import javafx.scene.control.Label
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.paint.Color.*
+import javafx.scene.text.Text
 import tornadofx.*
 
 class MainView : View() {
@@ -21,6 +22,7 @@ class MainView : View() {
     private val whiteMoves : javafx.scene.control.ListView<String> by fxid("listView1")
     private val blackMoves : javafx.scene.control.ListView<String> by fxid("listView2")
     private val roundCounter: Label by fxid("roundCounter")
+    private val infoField: Text by fxid("infoField")
 
     private val xRatio: Double = 3.0/16.0
     private val yRatio: Double = 1.0/12.0
@@ -30,10 +32,12 @@ class MainView : View() {
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
     private var squareSize = sizeActual / 8
     private var mainBoard = initBoard()
-    private var activeSide = PieceColor.WHITE
+    private var activeColor = PieceColor.WHITE
     private var activeSquare: IntArray? = null
     private var validMoves: Array<out IntArray>? = null
-    private var checkState = null
+
+    private var checkStateValidMoves: Array<out IntArray>? = null
+    private var checkState: Boolean = false
 
     private var fillColor: Color = rgb(0, 255, 125, 0.5) // yellowish
 
@@ -55,7 +59,7 @@ class MainView : View() {
         // moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
         // doesn't work here for some reason ¯\_(ツ)_/¯
 
-        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+        drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
         drawBoardBackground()
 
         turnStates[0] = getCopyOfBoard(mainBoard)
@@ -71,16 +75,18 @@ class MainView : View() {
         })
 
 
-        pieceCanvas.onMouseClicked = EventHandler {
+        pieceCanvas.onMouseClicked = EventHandler { it ->
 
             //TODO create logic for situations where there is a check - it cant be that hard, can it? (lol)
 
             val coords = determineBoardCoords(it.x, it.y)
+            checkState = checkForCheck(activeColor, mainBoard)
+            infoField.text = checkState.toString()
 
             if (checkCoords(coords)) {
 
                 var isPieceActiveColor = false
-                isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeSide
+                isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeColor
                 var validMove = false
                 if (validMoves != null) { // check if the square clicked on would be a valid move
                     for (move in validMoves!!) {
@@ -90,6 +96,8 @@ class MainView : View() {
                         }
                     }
                 }
+
+
 
                 if ((activeSquare == null  || !coords.contentEquals(activeSquare) && !validMove) && isPieceActiveColor) {
                     // if there is no active square, or if the selected square is not a valid move
@@ -105,30 +113,54 @@ class MainView : View() {
                         getPossibleMoves(activeSquare!!, mainBoard)
                     }
 
+                    if (checkState && piece?.type != PieceType.KING) { // the king moves are weird so this doesn't apply to them
+                        /** makes sure that if the kind is in check, only the moves that will uncheck him are possible **/
+                        checkStateValidMoves = getCheckResolvingMoves(activeColor, mainBoard)?.toTypedArray()
+                        //fillMoves(checkStateValidMoves)
+                        //fillMoves(validMoves, RED)
+
+                        val actuallyValidMoves: ArrayList<IntArray> = arrayListOf()
+                        for (move in validMoves!!) {
+                            val element = checkStateValidMoves?.find { it.contentEquals(move) }
+                            if (element != null) {
+                                /** only add the move if it would resolve the check **/
+                                if (tryMoveOut(coords, move, activeColor, mainBoard)) {
+                                    actuallyValidMoves.add(element)
+                                }
+                            }
+                        }
+
+                        validMoves = actuallyValidMoves.toTypedArray()
+                    }
+
                     fillMoves(validMoves)
-                    //fillMoves(getAllMovesForColor(PieceColor.BLACK, mainBoard).toTypedArray())
 
                 } else {
                     if (!activeSquare.contentEquals(coords)) {
                         if (validMoves != null) {
                             for (move in validMoves!!) {
                                 if (coords.contentEquals(move)) {
+                                    if (checkState && getPiece(activeSquare!!, mainBoard)?.type != PieceType.KING) {
+                                        if (checkStateValidMoves?.find { it.contentEquals(move) } == null) {
+                                            break
+                                        }
+                                    }
 
                                     // save the board state so it can be reverted to
                                     turnStates[turnCount] = getCopyOfBoard(mainBoard)
-                                    //printBoard(mainBoard) // keep in mind that the colors are inverted if you are debugging with this
                                     turnCount += 1
                                     roundCounter.text = "Round $turnCount"
 
                                     // move, draw pieces, undraw move highlights
                                     move(activeSquare!!, move, mainBoard)
-                                    drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+                                    drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
                                     wipeCanvas(moveHighlightCanvas)
                                     flipActiveSide()
 
                                     // make sure these are empty, would lead to weird things happening
                                     activeSquare = null
                                     validMoves = null
+                                    checkStateValidMoves = null
 
                                     break
                                 }
@@ -175,13 +207,13 @@ class MainView : View() {
         mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
         moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
 
-        activeSide =
-        if (activeSide == PieceColor.WHITE) {
+        activeColor =
+        if (activeColor == PieceColor.WHITE) {
             PieceColor.BLACK
         } else {
             PieceColor.WHITE
         }
-        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+        drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
     }
 
     private fun fillMoves(moves: Array<out IntArray>?, color: Color? = null) {
@@ -216,7 +248,7 @@ class MainView : View() {
         var yCoord: Int = -1
 
         if (!(xActual / squareSize > 8 || yActual / squareSize > 8 || xActual / squareSize < 0 || yActual / squareSize < 0 && !actual)){
-            if (activeSide == PieceColor.BLACK) {
+            if (activeColor == PieceColor.BLACK) {
                 xCoord = (xActual / squareSize).toInt()
                 yCoord = (yActual / squareSize).toInt()
             } else {
@@ -302,9 +334,9 @@ class MainView : View() {
         //flipActiveSide()
         //mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
         //moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
-        drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+        drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
 
-        fillMoves(getCheckResolvingMoves(PieceColor.WHITE, mainBoard)?.toTypedArray())
+        //fillMoves(getCheckResolvingMoves(PieceColor.WHITE, mainBoard)?.toTypedArray())
         //fillColor = rgb(0, 0, 0, 0.0)
         //fillMoves(getAllMovesForColor(PieceColor.BLACK, mainBoard).toTypedArray())
 
@@ -356,7 +388,7 @@ class MainView : View() {
 
             flipActiveSide()
 
-            drawPieces(mainBoard, pieceCanvas, activeSide, boardMargin, squareSize)
+            drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
         }
 
     }
