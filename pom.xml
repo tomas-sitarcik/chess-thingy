@@ -38,6 +38,16 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>no.tornado</groupId>
+            <artifactId>fxlauncher</artifactId>
+            <version>1.0.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>8.40.11</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -54,6 +64,31 @@
         </resources>
 
         <plugins>
+
+            <plugin>
+                <groupId>io.github.fvarrui</groupId>
+                <artifactId>javapackager</artifactId>
+                <version>1.6.5</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>chess.app.MyApp</mainClass>
+                            <bundleJre>true</bundleJre>
+                            <jrePath>C:\Program Files\Java\jdk1.8.0_291\jre</jrePath>
+
+                            <additionalResources>
+                                <additionalResource>src/resources</additionalResource>
+                            </additionalResources>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>

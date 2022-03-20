@@ -52,6 +52,8 @@ class MainView : View() {
 
     init {
 
+        println(javaClass.getResource("resources.images.pieces.black_king.png"))
+
         //TODO CLEAN UP THIS FILE
 
         //currentStage?.isResizable = false
