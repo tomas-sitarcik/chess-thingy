@@ -33,6 +33,26 @@ fun getMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArra
     }
 }
 
+fun getPiecesOfColor(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray>? {
+
+    val opponentPieces: ArrayList<IntArray>? = arrayListOf()
+
+    for (i in 0..7){
+        for (y in 0..7) {
+            val pos = intArrayOf(y, i)
+            if (getPiece(pos, board) is Piece) {
+                val piece = getPiece(pos, board)
+                if (piece?.color == color) {
+                    opponentPieces?.add(pos)
+                }
+            }
+        }
+    }
+
+    return opponentPieces
+
+}
+
 fun getPossibleMoves(coords: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
 
     var possibleMoves: Array<out IntArray>? = null
@@ -180,17 +200,23 @@ fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): 
 
 fun getCheckResolvingMoves(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray>? {
 
-    /** TODO FINISH THE FUNCTION
+    /**
      * returns a list of moves that will resolve a check, this list(array or arrayList, idk yet) will then be input
      * into MainView and searched in for showing/trying to make a move**/
 
-    val possibleMoves = getSafeKingMoves(findKing(color, board), board)
+
 
     // we don't care where the enemy can move their pawns as it is a non-capturing move - therefore irrelevant here
     val allyMoves = getCaptureMovesForColor(color, board, true)
     val opponentMoves = getCaptureMovesForColor(flipColor(color), board)
 
-    return applyMaskToMoves(allyMoves, opponentMoves)
+    val possibleMoves = applyMaskToMoves(allyMoves, opponentMoves)
+
+    for (position in getPiecesOfColor(flipColor(color), board)!!) {
+        possibleMoves?.add(position)
+    }
+
+    return possibleMoves
 }
 
 fun findKing(color: PieceColor, board: Array<Array<Piece?>>): IntArray {

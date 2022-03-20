@@ -8,7 +8,10 @@ import javafx.scene.control.Label
 import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.paint.Color.*
+import javafx.scene.text.Font
+import javafx.scene.text.FontSmoothingType
 import javafx.scene.text.Text
+import javafx.scene.text.TextAlignment
 import tornadofx.*
 
 class MainView : View() {
@@ -27,7 +30,7 @@ class MainView : View() {
     private val xRatio: Double = 3.0/16.0
     private val yRatio: Double = 1.0/12.0
 
-    private val boardMargin = 0.025
+    private val boardMargin = 0.030
     private var margin = boardCanvas.width * boardMargin
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
     private var squareSize = sizeActual / 8
@@ -76,8 +79,6 @@ class MainView : View() {
 
 
         pieceCanvas.onMouseClicked = EventHandler { it ->
-
-            //TODO create logic for situations where there is a check - it cant be that hard, can it? (lol)
 
             val coords = determineBoardCoords(it.x, it.y)
             checkState = checkForCheck(activeColor, mainBoard)
@@ -174,11 +175,9 @@ class MainView : View() {
         pieceCanvas.onMouseMoved = EventHandler {
 
             if (!magic) {
-                /**
-                    very bad and inelegant solution
-                    i wish i didn't have to do it like this but this is the only way i can change the scaleYs of the
-                    canvases, because when i change them in the init block it just doesn't work
-                */
+                /** very bad and inelegant solution i wish i didn't have to do it like this but this is the only way
+                 *  i can change the scaleYs of the canvases, because when i change them in the init block it
+                 *  just doesn't work*/
                 mouseHighlightCanvas.scaleY = mouseHighlightCanvas.scaleY * -1
                 moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
                 magic = true
@@ -379,6 +378,30 @@ class MainView : View() {
             if (gCon.fill == WHITE)
                 gCon.fill = GREY
             else gCon.fill = WHITE
+        }
+
+        val columnLetters = arrayOf("A", "B", "C", "D", "E", "F", "G", "H")
+        gCon.fill = BLACK
+
+        gCon.textAlign = TextAlignment.CENTER
+        gCon.font = Font(margin * 0.85)
+
+        columnLetters.forEachIndexed { i, letter ->
+            gCon.fillText(letter, squareSize * i + margin + squareSize / 2,
+                                  margin - margin * 0.15,
+                                     squareSize)
+            gCon.fillText(letter, squareSize * i + margin + squareSize / 2,
+                                  2 * margin + 8 * squareSize - margin * 0.15,
+                                     squareSize)
+        }
+
+        (1..8).forEachIndexed { i, letter ->
+            gCon.fillText(letter.toString(), margin / 2,
+                                             squareSize * i + margin + squareSize / 2 + margin * 0.425,
+                                                squareSize)
+            gCon.fillText(letter.toString(), 2 * margin + 8 * squareSize - margin / 2,
+                                             squareSize * i + margin + squareSize / 2 + margin * 0.425,
+                                                squareSize)
         }
     }
 
