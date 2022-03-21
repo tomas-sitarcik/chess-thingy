@@ -2,25 +2,6 @@ package chess.board
 
 import chess.board.PieceType.*
 
-fun getHorizontalDistances(position: IntArray): IntArray {
-    val distances = IntArray(4)
-    distances[0] = position[1] // up
-    distances[1] = 7 - position[0] // right
-    distances[2] = 7 - position[1] // down
-    distances[3] = position[0] // left
-    return distances
-}
-
-fun getDiagonalDistances(position: IntArray): IntArray {
-    val distances = getHorizontalDistances(position)
-    val diagonalDistances = IntArray(4)
-    diagonalDistances[0] = Integer.min(distances[0], distances[1]) // top right
-    diagonalDistances[1] = Integer.min(distances[1], distances[2]) // down right
-    diagonalDistances[2] = Integer.min(distances[2], distances[3]) // down left
-    diagonalDistances[3] = Integer.min(distances[3], distances[0]) // top left
-    return diagonalDistances
-}
-
 fun getMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArray>? {
     val piece = board[position[0]][position[1]] ?: return null
     return when (piece.type) {
@@ -167,7 +148,7 @@ fun getCaptureMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, incl
     return possibleMoves
 }
 
-fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): Array<IntArray>? {
+fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): ArrayList<IntArray>? {
 
     /** provides proper check safe movement for the king and a partial check resolving ability - only king move wise **/
 
@@ -195,7 +176,7 @@ fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): 
         possibleMoves = applyMaskToMoves(kingMoves.toCollection(ArrayList()), illegalMoves, true)
     }
 
-    return possibleMoves!!.toTypedArray()
+    return possibleMoves
 }
 
 fun getCheckResolvingMoves(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray>? {
@@ -218,7 +199,7 @@ fun getCheckResolvingMoves(color: PieceColor, board: Array<Array<Piece?>>): Arra
     return possibleMoves
 }
 
-fun findKing(color: PieceColor, board: Array<Array<Piece?>>): IntArray {
+fun getKingCoords(color: PieceColor, board: Array<Array<Piece?>>): IntArray {
 
     for (i in 0..7) {
         for (j in 0..7) {
@@ -232,9 +213,69 @@ fun findKing(color: PieceColor, board: Array<Array<Piece?>>): IntArray {
 
 }
 
+fun getPieceInstances(type: PieceType, color: PieceColor? = null, board: Array<Array<Piece?>>): ArrayList<IntArray> {
+
+    val positions: ArrayList<IntArray> = arrayListOf()
+
+    for (i in 0..7) {
+        for (j in 0..7) {
+            if (board[j][i]?.type == type && board[j][i]?.color == color || color == null) {
+                positions.add(intArrayOf(j, i))
+            }
+        }
+    }
+
+    return positions
+
+}
+
+fun getCastleMoves(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray?> {
+
+    val king = getKingCoords(color, board)
+    val rooks = getPieceInstances(ROOK, color, board)
+
+    val moves: ArrayList<IntArray?> = arrayListOf(IntArray(2))
+    moves.clear()
+
+    /** first move provided is the move the king will perform, the second one is the rook's move **/
+
+    var x = 0
+    if (color == PieceColor.BLACK) {
+        x = 7
+    }
+
+    if (getPiece(intArrayOf(4, x), board)?.type == KING) {
+
+        if (getPiece(intArrayOf(0, x), board)?.type == ROOK &&
+            getPiece(intArrayOf(1, x), board) == null &&
+            getPiece(intArrayOf(2, x), board) == null &&
+            getPiece(intArrayOf(3, x), board) == null) {
+
+            moves.add(intArrayOf(2, x))
+            moves.add(intArrayOf(3, x))
+        } else {
+            moves.add(null)
+        }
+
+        if (getPiece(intArrayOf(7, x), board)?.type == ROOK &&
+            getPiece(intArrayOf(6, x), board) == null &&
+            getPiece(intArrayOf(5, x), board) == null) {
+
+            moves.add(intArrayOf(6, x)) // king
+            moves.add(intArrayOf(5, x)) //
+        } else {
+            moves.add(null)
+        }
+
+    }
+
+    return moves
+
+}
+
 fun checkForCheck(color: PieceColor, board: Array<Array<Piece?>>): Boolean {
     /** too long so its a function now **/
-    return getCaptureMovesForColor(flipColor(color), board).find { it.contentEquals(findKing(color, board)) } != null
+    return getCaptureMovesForColor(flipColor(color), board).find { it.contentEquals(getKingCoords(color, board)) } != null
 
 }
 
@@ -246,7 +287,7 @@ fun applyMaskToMoves(moves: ArrayList<IntArray>, mask: ArrayList<IntArray>?, neg
 
     if (mask?.size == 0) {
         for (thing in moves) {
-            printMove(thing)
+            //printMove(thing)
         }
         return moves
     }
@@ -282,6 +323,19 @@ fun tryMoveOut(position: IntArray, move: IntArray, color: PieceColor, board: Arr
 
     return !checkForCheck(color, newBoard) // im not sure why it has to negated, it just works
 }
+
+fun tryTwoMovesOut(position: IntArray, move: IntArray, position2: IntArray, move2: IntArray, color: PieceColor, board: Array<Array<Piece?>>): Boolean {
+
+    /** "checks out" (get it) if the given move would cause the king to get checked **/
+
+    val newBoard = getCopyOfBoard(board)
+
+    move(position, move, newBoard)
+    move(position2, move2, newBoard)
+
+    return !checkForCheck(color, newBoard)
+
+    }
 
 fun checkCoords(coords: IntArray): Boolean {
     return coords[0] in 0..7 && coords[1] in 0..7

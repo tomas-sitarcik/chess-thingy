@@ -14,6 +14,7 @@ import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
 import tornadofx.*
 
+@Suppress("NAME_SHADOWING")
 class MainView : View() {
 
     override val root : AnchorPane by fxml("/fxml/MainView.fxml")
@@ -30,10 +31,14 @@ class MainView : View() {
     private val xRatio: Double = 3.0/16.0
     private val yRatio: Double = 1.0/12.0
 
+    /** graphical things **/
     private val boardMargin = 0.030
     private var margin = boardCanvas.width * boardMargin
     private var sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
     private var squareSize = sizeActual / 8
+    private var fillColor: Color = rgb(0, 255, 125, 0.5) // yellow
+
+    /** game logic **/
     private var mainBoard = initBoard()
     private var activeColor = PieceColor.WHITE
     private var activeSquare: IntArray? = null
@@ -41,18 +46,16 @@ class MainView : View() {
 
     private var checkStateValidMoves: Array<out IntArray>? = null
     private var checkState: Boolean = false
-
-    private var fillColor: Color = rgb(0, 255, 125, 0.5) // yellowish
-
     private var turnStates: MutableMap<Int, Array<Array<Piece?>>> = mutableMapOf()
     private var turnCount: Int = 0
+
+
+
 
     private var magic: Boolean = false // forbidden variable
 
 
     init {
-
-        println(javaClass.getResource("resources.images.pieces.black_king.png"))
 
         //TODO CLEAN UP THIS FILE
 
@@ -100,17 +103,21 @@ class MainView : View() {
                     }
                 }
 
-
-
                 if ((activeSquare == null  || !coords.contentEquals(activeSquare) && !validMove) && isPieceActiveColor) {
                     /** if there is no active square, or if the selected square is not a valid move **/
                     wipeCanvas(moveHighlightCanvas)
                     setActiveSquare(coords)
                     val piece = getPiece(activeSquare!!, mainBoard)
 
-                    validMoves =
-                    if (piece?.type == PieceType.KING) {
-                        getSafeKingMoves(activeSquare!!, mainBoard)
+                    val castleMoves = getCastleMoves(activeColor, mainBoard)
+
+                    validMoves = if (piece?.type == PieceType.KING) {
+                        val safeKingMoves = getSafeKingMoves(activeSquare!!, mainBoard)
+
+                        castleMoves[0]?.let { it -> safeKingMoves?.add(it) }
+                        castleMoves[1]?.let { it -> safeKingMoves?.add(it) }
+
+                        safeKingMoves?.toTypedArray()
 
                     } else {
                         getPossibleMoves(activeSquare!!, mainBoard)
@@ -119,8 +126,6 @@ class MainView : View() {
                     if (checkState && piece?.type != PieceType.KING) { // the king moves are weird so this doesn't apply to them
                         /** makes sure that if the kind is in check, only the moves that will uncheck him are possible **/
                         checkStateValidMoves = getCheckResolvingMoves(activeColor, mainBoard)?.toTypedArray()
-                        //fillMoves(checkStateValidMoves)
-                        //fillMoves(validMoves, RED)
 
                         val actuallyValidMoves: ArrayList<IntArray> = arrayListOf()
                         for (move in validMoves!!) {
@@ -133,6 +138,21 @@ class MainView : View() {
                             }
                         }
 
+                        if (getPiece(intArrayOf(4, 0), mainBoard)?.type == PieceType.KING ||
+                            getPiece(intArrayOf(4, 7), mainBoard)?.type == PieceType.KING) {
+
+                            if ( tryTwoMovesOut(getKingCoords(activeColor, mainBoard), castleMoves[0]!!, ){
+                                        actuallyValidMoves.add(castleMoves[0]!!)
+                                        actuallyValidMoves.add(castleMoves[1]!!)
+                                    }
+
+
+
+
+                        }
+
+
+
                         validMoves = actuallyValidMoves.toTypedArray()
                     }
 
@@ -143,7 +163,7 @@ class MainView : View() {
                     if (!activeSquare.contentEquals(coords) && validMoves != null) {
                         for (move in validMoves!!) {
                             if (coords.contentEquals(move)) {
-                                /** TODO EXPLAIN THIS **/
+                                /** TODO EXPLAIN THIS??? **/
                                 if (checkState && getPiece(activeSquare!!, mainBoard)?.type != PieceType.KING) {
                                     if (checkStateValidMoves?.find { it.contentEquals(move) } == null) {
                                         break
@@ -346,21 +366,30 @@ class MainView : View() {
         //moveHighlightCanvas.scaleY = moveHighlightCanvas.scaleY * -1
         drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
 
+        for (a in getPieceInstances(PieceType.ROOK, PieceColor.WHITE, mainBoard)) {
+            fillSquare(moveHighlightCanvas, a, fillColor)
+        }
+
+        for (a in getCastleMoves(PieceColor.WHITE, mainBoard)) {
+                //print(printMove(a!!))
+                fillSquare(moveHighlightCanvas, a!!, fillColor)
+        }
+
+        //fillSquare(moveHighlightCanvas, intArrayOf(6, 0), RED)
+
         //fillMoves(getCheckResolvingMoves(PieceColor.WHITE, mainBoard)?.toTypedArray())
         //fillColor = rgb(0, 0, 0, 0.0)
         //fillMoves(getAllMovesForColor(PieceColor.BLACK, mainBoard).toTypedArray())
-
         //fillMoves(getAllMovesForColor(activeSide, mainBoard).toTypedArray())
 
     }
 
     private fun drawBoardBackground() {
 
-        margin = boardCanvas.width * boardMargin
-        sizeActual = boardCanvas.width - boardCanvas.width * boardMargin * 2
-        squareSize = sizeActual / 8
-
+        update()
         val gCon = boardCanvas.graphicsContext2D
+
+        /** draw the board **/
 
         gCon.fill = GREY
         gCon.fillRect(0.0, 0.0, boardCanvas.width, boardCanvas.height)
@@ -381,6 +410,8 @@ class MainView : View() {
                 gCon.fill = GREY
             else gCon.fill = WHITE
         }
+
+        /** draw the column and row letters/numbers **/
 
         val columnLetters = arrayOf("A", "B", "C", "D", "E", "F", "G", "H")
         gCon.fill = BLACK
