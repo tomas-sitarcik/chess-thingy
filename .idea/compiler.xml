@@ -6,15 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="untitled" />
-        <module name="tornadofx-empty-project" />
+        <module name="postFixEval" />
         <module name="tornadofx-empty-maven-project" />
+        <module name="tornadofx-empty-project" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="postFixEval" target="1.5" />
       <module name="tornadofx-empty-maven-project" target="1.5" />
       <module name="tornadofx-empty-project" target="1.5" />
-      <module name="untitled" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

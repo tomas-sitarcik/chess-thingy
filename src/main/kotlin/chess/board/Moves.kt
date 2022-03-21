@@ -200,9 +200,8 @@ fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): 
 
 fun getCheckResolvingMoves(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray>? {
 
-    /**
-     * returns a list of moves that will resolve a check, this list(array or arrayList, idk yet) will then be input
-     * into MainView and searched in for showing/trying to make a move**/
+    /** returns a list of moves that will resolve a check, this list will then be input
+     *  into MainView and searched in for showing/trying to make a move **/
 
 
 
@@ -234,7 +233,7 @@ fun findKing(color: PieceColor, board: Array<Array<Piece?>>): IntArray {
 }
 
 fun checkForCheck(color: PieceColor, board: Array<Array<Piece?>>): Boolean {
-
+    /** too long so its a function now **/
     return getCaptureMovesForColor(flipColor(color), board).find { it.contentEquals(findKing(color, board)) } != null
 
 }
