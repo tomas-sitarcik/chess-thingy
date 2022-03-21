@@ -91,9 +91,9 @@ class MainView : View() {
                 var isPieceActiveColor = false
                 isPieceActiveColor = getPiece(coords, mainBoard)?.color == activeColor
                 var validMove = false
-                if (validMoves != null) { // check if the square clicked on would be a valid move
+                if (validMoves != null) {
                     for (move in validMoves!!) {
-                        if (move.contentEquals(coords)) {
+                        if (move.contentEquals(coords)) { /** check if the square clicked on would be a valid move **/
                             validMove = true
                             break
                         }
@@ -103,7 +103,7 @@ class MainView : View() {
 
 
                 if ((activeSquare == null  || !coords.contentEquals(activeSquare) && !validMove) && isPieceActiveColor) {
-                    // if there is no active square, or if the selected square is not a valid move
+                    /** if there is no active square, or if the selected square is not a valid move **/
                     wipeCanvas(moveHighlightCanvas)
                     setActiveSquare(coords)
                     val piece = getPiece(activeSquare!!, mainBoard)
