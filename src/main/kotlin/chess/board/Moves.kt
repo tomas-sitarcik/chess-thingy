@@ -229,42 +229,53 @@ fun getPieceInstances(type: PieceType, color: PieceColor? = null, board: Array<A
 
 }
 
-fun getCastleMoves(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray?> {
+fun getCastleMoves(color: PieceColor, inputBoard: Array<Array<Piece?>>): Array<IntArray?> {
 
+    var board = getCopyOfBoard(inputBoard)
     val king = getKingCoords(color, board)
-    val rooks = getPieceInstances(ROOK, color, board)
 
-    val moves: ArrayList<IntArray?> = arrayListOf(IntArray(2))
-    moves.clear()
+    val moves: Array<IntArray?> = arrayOfNulls(6)
 
-    /** first move provided is the move the king will perform, the second one is the rook's move **/
+    /** returns the move the king can make - index 0 and 1 and also returns the full move at the end - pos and coord for
+     *  the rook - i just didn't want to have a bunch of bulky code in the listener because it is already quite full as
+     *  it is, and this function already knows the move so there is not a good reason to make another function for it**/
+
+    //TODO move explanation into documentation?
 
     var x = 0
     if (color == PieceColor.BLACK) {
         x = 7
     }
 
-    if (getPiece(intArrayOf(4, x), board)?.type == KING) {
+    if (getPiece(king, board)?.type == KING) {
 
-        if (getPiece(intArrayOf(0, x), board)?.type == ROOK &&
+        if (getPiece(intArrayOf(0, x), board)?.type == ROOK && // queen side castle
             getPiece(intArrayOf(1, x), board) == null &&
             getPiece(intArrayOf(2, x), board) == null &&
             getPiece(intArrayOf(3, x), board) == null) {
 
-            moves.add(intArrayOf(2, x))
-            moves.add(intArrayOf(3, x))
-        } else {
-            moves.add(null)
+            /** first do the rook move and then check for checks **/
+            move(intArrayOf(0, x), intArrayOf(3, x), board)
+            if (tryMoveOut(king, intArrayOf(2, x), color, board)) {
+                moves[0] = intArrayOf(2, x)
+                moves[2] = intArrayOf(0, x)
+                moves[3] = intArrayOf(3, x)
+            }
+                board = getCopyOfBoard(inputBoard) // make sure the other check is performed with the initial board
+
         }
 
-        if (getPiece(intArrayOf(7, x), board)?.type == ROOK &&
+        if (getPiece(intArrayOf(7, x), board)?.type == ROOK && // king side castle
             getPiece(intArrayOf(6, x), board) == null &&
             getPiece(intArrayOf(5, x), board) == null) {
 
-            moves.add(intArrayOf(6, x)) // king
-            moves.add(intArrayOf(5, x)) //
-        } else {
-            moves.add(null)
+            /** first do the rook move and then check for checks **/
+            move(intArrayOf(7, x), intArrayOf(5, x), board)
+            if (tryMoveOut(king, intArrayOf(6, x), color, board)) {
+                moves[1] = intArrayOf(6, x)
+                moves[4] = intArrayOf(7, x)
+                moves[5] = intArrayOf(5, x)
+            }
         }
 
     }
@@ -324,13 +335,13 @@ fun tryMoveOut(position: IntArray, move: IntArray, color: PieceColor, board: Arr
     return !checkForCheck(color, newBoard) // im not sure why it has to negated, it just works
 }
 
-fun tryTwoMovesOut(position: IntArray, move: IntArray, position2: IntArray, move2: IntArray, color: PieceColor, board: Array<Array<Piece?>>): Boolean {
+fun tryTwoMovesOut(position1: IntArray, move1: IntArray, position2: IntArray, move2: IntArray, color: PieceColor, board: Array<Array<Piece?>>): Boolean {
 
     /** "checks out" (get it) if the given move would cause the king to get checked **/
 
     val newBoard = getCopyOfBoard(board)
 
-    move(position, move, newBoard)
+    move(position1, move1, newBoard)
     move(position2, move2, newBoard)
 
     return !checkForCheck(color, newBoard)

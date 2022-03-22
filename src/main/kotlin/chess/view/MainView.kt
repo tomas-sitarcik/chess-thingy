@@ -41,16 +41,18 @@ class MainView : View() {
     /** game logic **/
     private var mainBoard = initBoard()
     private var activeColor = PieceColor.WHITE
+    private var turnCount: Int = 0
+    private var turnStates: MutableMap<Int, Array<Array<Piece?>>> = mutableMapOf()
+    private var checkState: Boolean = false
+    private var castled: MutableMap<PieceColor, Boolean> = mutableMapOf(PieceColor.WHITE to false, PieceColor.BLACK to false)
+    private var castledOnTurn: MutableMap<PieceColor, Int> = mutableMapOf(PieceColor.WHITE to -1, PieceColor.BLACK to -1) //TODO MAKE SURE THIS WORKS
+    // has a side castled already? white - [0], black - [1]
+
+
+    /** moves and coordinates of things **/
     private var activeSquare: IntArray? = null
     private var validMoves: Array<out IntArray>? = null
-
     private var checkStateValidMoves: Array<out IntArray>? = null
-    private var checkState: Boolean = false
-    private var turnStates: MutableMap<Int, Array<Array<Piece?>>> = mutableMapOf()
-    private var turnCount: Int = 0
-
-
-
 
     private var magic: Boolean = false // forbidden variable
 
@@ -107,54 +109,59 @@ class MainView : View() {
                     /** if there is no active square, or if the selected square is not a valid move **/
                     wipeCanvas(moveHighlightCanvas)
                     setActiveSquare(coords)
-                    val piece = getPiece(activeSquare!!, mainBoard)
+                    val piece = getPiece(coords, mainBoard)
 
-                    val castleMoves = getCastleMoves(activeColor, mainBoard)
+
 
                     validMoves = if (piece?.type == PieceType.KING) {
                         val safeKingMoves = getSafeKingMoves(activeSquare!!, mainBoard)
-
-                        castleMoves[0]?.let { it -> safeKingMoves?.add(it) }
-                        castleMoves[1]?.let { it -> safeKingMoves?.add(it) }
-
                         safeKingMoves?.toTypedArray()
 
                     } else {
                         getPossibleMoves(activeSquare!!, mainBoard)
                     }
 
+                    val actuallyValidMoves: ArrayList<IntArray> = arrayListOf()
+                    var replaceMoves = false
                     if (checkState && piece?.type != PieceType.KING) { // the king moves are weird so this doesn't apply to them
                         /** makes sure that if the kind is in check, only the moves that will uncheck him are possible **/
                         checkStateValidMoves = getCheckResolvingMoves(activeColor, mainBoard)?.toTypedArray()
-
-                        val actuallyValidMoves: ArrayList<IntArray> = arrayListOf()
                         for (move in validMoves!!) {
-                            val element = checkStateValidMoves?.find { it.contentEquals(move) }
-                            if (element != null) {
+                            if (checkStateValidMoves?.find { it.contentEquals(move)} != null ) {
                                 /** only add the move if it would resolve the check **/
                                 if (tryMoveOut(coords, move, activeColor, mainBoard)) {
-                                    actuallyValidMoves.add(element)
+                                    actuallyValidMoves.add(move)
                                 }
                             }
                         }
 
-                        if (getPiece(intArrayOf(4, 0), mainBoard)?.type == PieceType.KING ||
-                            getPiece(intArrayOf(4, 7), mainBoard)?.type == PieceType.KING) {
+                        replaceMoves = true
+                    }
+                    if (!castled[activeColor]!! && piece?.type == PieceType.KING) {
+                        var castleMoves = getCastleMoves(activeColor, mainBoard)
 
-                            if ( tryTwoMovesOut(getKingCoords(activeColor, mainBoard), castleMoves[0]!!, ){
-                                        actuallyValidMoves.add(castleMoves[0]!!)
-                                        actuallyValidMoves.add(castleMoves[1]!!)
-                                    }
+                        for (move in arrayOf(castleMoves[0], castleMoves[1])) {
+                            if (move != null) {
+                                actuallyValidMoves.add(move)
+                            }
+                        }
+                    }
 
-
-
-
+                    validMoves =
+                        if (replaceMoves) {
+                            actuallyValidMoves.toTypedArray()
+                        } else {
+                            val tempValidMoves = validMoves?.toCollection(ArrayList())
+                            for (move in actuallyValidMoves) {
+                                tempValidMoves?.add(move)
+                            }
+                            tempValidMoves?.toTypedArray()
                         }
 
 
 
-                        validMoves = actuallyValidMoves.toTypedArray()
-                    }
+
+
 
                     fillMoves(validMoves)
 
@@ -175,11 +182,30 @@ class MainView : View() {
                                 turnCount += 1
                                 roundCounter.text = "Round $turnCount"
 
-                                /** move, draw pieces, undraw move highlights **/
-                                move(activeSquare!!, move, mainBoard)
+                                /** make the move/moves in case of a castling move **/
+                                val castleMoves = getCastleMoves(activeColor, mainBoard)
+
+                                /*only the two first two elements are the moves of the king, searching in the others
+                                would cause wrong moves to be made*/
+                                if (arrayOf(castleMoves[0], castleMoves[1]).find { it.contentEquals(coords) } != null) {
+                                    if (coords.contentEquals(castleMoves[0])) {
+                                        move(activeSquare!!, move, mainBoard)
+                                        move(castleMoves[2]!!, castleMoves[3]!!, mainBoard)
+                                        castled[activeColor] = true
+                                    } else {
+                                        move(activeSquare!!, move, mainBoard)
+                                        move(castleMoves[4]!!, castleMoves[5]!!, mainBoard)
+                                        castled[activeColor] = true
+                                    }
+                                } else {
+                                    move(activeSquare!!, move, mainBoard)
+                                }
+
+                                /** draw pieces, undraw move highlights and active square **/
+
                                 drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
                                 wipeCanvas(moveHighlightCanvas)
-                                flipActiveSide()
+                                //flipActiveSide()
 
                                 /** make sure these are empty, would lead to weird things happening **/
                                 activeSquare = null
