@@ -9,7 +9,6 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.paint.Color
 import javafx.scene.paint.Color.*
 import javafx.scene.text.Font
-import javafx.scene.text.FontSmoothingType
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
 import tornadofx.*
@@ -38,6 +37,7 @@ class MainView : View() {
     private var squareSize = sizeActual / 8
     private var fillColor: Color = rgb(0, 255, 125, 0.5) // yellow
 
+    //TODO - lower priority - get this out of the mainview
     /** game logic **/
     private var mainBoard = initBoard()
     private var activeColor = PieceColor.WHITE
@@ -45,8 +45,9 @@ class MainView : View() {
     private var turnStates: MutableMap<Int, Array<Array<Piece?>>> = mutableMapOf()
     private var checkState: Boolean = false
     private var castled: MutableMap<PieceColor, Boolean> = mutableMapOf(PieceColor.WHITE to false, PieceColor.BLACK to false)
-    private var castledOnTurn: MutableMap<PieceColor, Int> = mutableMapOf(PieceColor.WHITE to -1, PieceColor.BLACK to -1) //TODO MAKE SURE THIS WORKS
+    private var castledOnTurn: MutableMap<PieceColor, Int> = mutableMapOf(PieceColor.WHITE to -1, PieceColor.BLACK to -1)
     // has a side castled already? white - [0], black - [1]
+    private var lastPawnDoubleMove: IntArray? = null
 
 
     /** moves and coordinates of things **/
@@ -58,8 +59,6 @@ class MainView : View() {
 
 
     init {
-
-        //TODO CLEAN UP THIS FILE
 
         //currentStage?.isResizable = false
         currentStage?.minWidth = 800.0
@@ -138,13 +137,26 @@ class MainView : View() {
                         replaceMoves = true
                     }
                     if (!castled[activeColor]!! && piece?.type == PieceType.KING) {
-                        var castleMoves = getCastleMoves(activeColor, mainBoard)
+                        val castleMoves = getCastleMoves(activeColor, mainBoard)
 
                         for (move in arrayOf(castleMoves[0], castleMoves[1])) {
                             if (move != null) {
                                 actuallyValidMoves.add(move)
                             }
                         }
+                    }
+
+                    /** en passant handling TODO MAKE IT WORK**/
+                    if (lastPawnDoubleMove != null) {
+
+                        val x = lastPawnDoubleMove!![0]
+
+                        if (activeSquare!![1] == 3 && activeSquare!![0] + 1 == x || activeSquare!![0] - 1 == x) {
+                            actuallyValidMoves.add(lastPawnDoubleMove!!)
+                        } else if (activeSquare!![1] == 4 && activeSquare!![0] + 1 == x || activeSquare!![0] - 1 == x) {
+                            actuallyValidMoves.add(lastPawnDoubleMove!!)
+                        }
+
                     }
 
                     validMoves =
@@ -157,11 +169,6 @@ class MainView : View() {
                             }
                             tempValidMoves?.toTypedArray()
                         }
-
-
-
-
-
 
                     fillMoves(validMoves)
 
@@ -179,11 +186,17 @@ class MainView : View() {
 
                                 /** save the board state so it can be reverted to **/
                                 turnStates[turnCount] = getCopyOfBoard(mainBoard)
-                                turnCount += 1
+                                print("saved turn $turnCount")
                                 roundCounter.text = "Round $turnCount"
 
                                 /** make the move/moves in case of a castling move **/
                                 val castleMoves = getCastleMoves(activeColor, mainBoard)
+
+                                if (getPiece(activeSquare!!, mainBoard)?.type == PieceType.PAWN) {
+                                    if (activeSquare!![1] - move[1] % 2 == 0) {
+                                        lastPawnDoubleMove = intArrayOf(move[0], move[1] - 1)
+                                    }
+                                }
 
                                 /*only the two first two elements are the moves of the king, searching in the others
                                 would cause wrong moves to be made*/
@@ -191,26 +204,38 @@ class MainView : View() {
                                     if (coords.contentEquals(castleMoves[0])) {
                                         move(activeSquare!!, move, mainBoard)
                                         move(castleMoves[2]!!, castleMoves[3]!!, mainBoard)
-                                        castled[activeColor] = true
                                     } else {
                                         move(activeSquare!!, move, mainBoard)
                                         move(castleMoves[4]!!, castleMoves[5]!!, mainBoard)
-                                        castled[activeColor] = true
                                     }
+
+                                    castled[activeColor] = true
+                                    castledOnTurn[activeColor] = turnCount
+
+                                    print("$activeColor castle move: ")
+                                    println(castled[activeColor])
+                                    print("castled on: ")
+                                    println(castledOnTurn[activeColor])
                                 } else {
                                     move(activeSquare!!, move, mainBoard)
                                 }
 
-                                /** draw pieces, undraw move highlights and active square **/
+
+
+
+                                /** draw pieces, undraw move highlights and active square and flip the active sides **/
 
                                 drawPieces(mainBoard, pieceCanvas, activeColor, boardMargin, squareSize)
                                 wipeCanvas(moveHighlightCanvas)
-                                //flipActiveSide()
+                                flipActiveSide()
 
                                 /** make sure these are empty, would lead to weird things happening **/
+
                                 activeSquare = null
                                 validMoves = null
                                 checkStateValidMoves = null
+
+                                turnCount += 1
 
                                 break
                             }
@@ -471,10 +496,24 @@ class MainView : View() {
 
     fun revertToRound(){
         if (turnCount > 0) {
+
+            if (castledOnTurn[flipColor(activeColor)]!! <= turnCount) {
+                castled[flipColor(activeColor)] = false
+                castledOnTurn[flipColor(activeColor)] = -1
+                // TODO thorough testing if this actually works properly
+            }
+
+            print(turnCount)
+
             turnStates.remove(turnCount)
-            turnCount -= 1
+              turnCount -= 1
             mainBoard = turnStates[turnCount]!!
             roundCounter.text = "Round $turnCount"
+
+            activeSquare = null
+            validMoves = null
+            checkStateValidMoves = null
+            wipeCanvas(moveHighlightCanvas)
 
             flipActiveSide()
 

@@ -44,6 +44,7 @@ fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceCol
     /** modifies the board depending on the active side **/
 
     var gBoard = Array(8) { Array<Piece?>(8) { null } }
+
     if (activeSide == PieceColor.WHITE) {
         for (i in 0..7) {
             for (j in 0..7) {
@@ -59,7 +60,11 @@ fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceCol
             if (gBoard[j][i] != null) {
                 var temp = gBoard[j][i]
                 if (temp != null) {
-                    gCon.drawImage(getPieceImage(temp.type, temp.color), origin + (j * squareSize), origin + (i * squareSize), squareSize, squareSize)
+                    gCon.drawImage(getPieceImage(temp.type, temp.color),
+                                                origin + (j * squareSize),
+                                                origin + (i * squareSize),
+                                                squareSize,
+                                                squareSize)
                 }
             }
         }
