@@ -352,6 +352,12 @@ fun checkCoords(coords: IntArray): Boolean {
     return coords[0] in 0..7 && coords[1] in 0..7
 }
 
+fun getReadableMove(move: IntArray): String {
+    val letters = arrayOf("A", "B", "C", "D", "E", "F", "G", "H")
+
+    return move[1].toString() + letters[move[0]]
+}
+
 fun printMove(move: IntArray) {
     print(move[0])
     print(", ")
