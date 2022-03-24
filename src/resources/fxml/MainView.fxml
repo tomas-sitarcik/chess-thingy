@@ -59,7 +59,7 @@
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
                <children>
-                  <ListView fx:id="listView1" focusTraversable="false" layoutX="35.0" pickOnBounds="false" prefHeight="310.0" prefWidth="125.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="0.0" />
+                  <ListView fx:id="listView1" focusTraversable="false" layoutX="35.0" pickOnBounds="false" prefHeight="310.0" prefWidth="125.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             <Button fx:id="revertButton" mnemonicParsing="false" onAction="#revertToRound" prefHeight="25.0" prefWidth="150.0" text="Revert" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
