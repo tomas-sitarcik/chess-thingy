@@ -37,11 +37,12 @@ fun getPieceImage(type: PieceType, color: PieceColor): Image {
     }
 }
 
-fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceColor, boardMargin: Double, squareSize: Double) {
+fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceColor, boardMargin: Double) {
 
     /** draws the pieces onto the board, according to the given board, and other properties this is a quite
      *  expensive function - computationally which is why resizing of the board is handled through scaling **/
 
+    var squareSize = (canvas.width - canvas.width * boardMargin * 2) / 8
     val origin = canvas.width * boardMargin
     val gCon = canvas.graphicsContext2D
 
@@ -110,6 +111,7 @@ fun drawBoardBackground(canvas: Canvas, fillA: Color, fillB: Color, boardMargin:
     /** draw the column and row letters/numbers **/
 
     val columnLetters = arrayOf("A", "B", "C", "D", "E", "F", "G", "H")
+    val rowNumbers = arrayOf("1", "2", "3", "4", "5", "6", "7", "8") // in case i decide to actually flip the row numbers
     gCon.fill = Color.BLACK
 
     gCon.textAlign = TextAlignment.CENTER
@@ -124,11 +126,11 @@ fun drawBoardBackground(canvas: Canvas, fillA: Color, fillB: Color, boardMargin:
                 squareSize)
     }
 
-    (1..8).forEachIndexed { i, letter ->
-        gCon.fillText(letter.toString(), margin / 2,
+    rowNumbers.forEachIndexed { i, letter ->
+        gCon.fillText(letter, margin / 2,
                 squareSize * i + margin + squareSize / 2 + margin * 0.425,
                 squareSize)
-        gCon.fillText(letter.toString(), 2 * margin + 8 * squareSize - margin / 2,
+        gCon.fillText(letter, 2 * margin + 8 * squareSize - margin / 2,
                 squareSize * i + margin + squareSize / 2 + margin * 0.425,
                 squareSize)
     }
