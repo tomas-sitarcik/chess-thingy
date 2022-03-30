@@ -16,7 +16,7 @@ fun getMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArra
 
 fun getPiecesOfColor(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<IntArray>? {
 
-    val opponentPieces: ArrayList<IntArray>? = arrayListOf()
+    val pieces: ArrayList<IntArray>? = arrayListOf()
 
     for (i in 0..7){
         for (y in 0..7) {
@@ -24,13 +24,13 @@ fun getPiecesOfColor(color: PieceColor, board: Array<Array<Piece?>>): ArrayList<
             if (getPiece(pos, board) is Piece) {
                 val piece = getPiece(pos, board)
                 if (piece?.color == color) {
-                    opponentPieces?.add(pos)
+                    pieces?.add(pos)
                 }
             }
         }
     }
 
-    return opponentPieces
+    return pieces
 
 }
 
@@ -53,14 +53,10 @@ fun getPossibleMoves(coords: IntArray, board: Array<Array<Piece?>>): Array<out I
         }
     }
 
-    if (possibleMoves == null) {
-        println("fuck")
-    }
-
     return possibleMoves
 }
 
-fun getCaptureMovesForColor(color: PieceColor, board: Array<Array<Piece?>>, includePawnMovement: Boolean = false): ArrayList<IntArray> {
+fun getCaptureMoves(color: PieceColor, board: Array<Array<Piece?>>, includePawnMovement: Boolean = false): ArrayList<IntArray> {
 
     /** returns all capture moves that the color is able to make **/
 
@@ -167,7 +163,7 @@ fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): 
     board[kingPosition[0]][kingPosition[1]] = null
 
     if (kingColor != null) {
-        allOpponentMoves = getCaptureMovesForColor(flipColor(kingColor), board)
+        allOpponentMoves = getCaptureMoves(flipColor(kingColor), board)
     }
 
     if (kingMoves != null) {
@@ -187,8 +183,8 @@ fun getCheckResolvingMoves(color: PieceColor, board: Array<Array<Piece?>>): Arra
 
 
     // we don't care where the enemy can move their pawns as it is a non-capturing move - therefore irrelevant here
-    val allyMoves = getCaptureMovesForColor(color, board, true)
-    val opponentMoves = getCaptureMovesForColor(flipColor(color), board)
+    val allyMoves = getCaptureMoves(color, board, true)
+    val opponentMoves = getCaptureMoves(flipColor(color), board)
 
     val possibleMoves = applyMaskToMoves(allyMoves, opponentMoves)
 
@@ -286,7 +282,7 @@ fun getCastleMoves(color: PieceColor, inputBoard: Array<Array<Piece?>>): Array<I
 
 fun checkForCheck(color: PieceColor, board: Array<Array<Piece?>>): Boolean {
     /** too long so its a function now **/
-    return getCaptureMovesForColor(flipColor(color), board).find { it.contentEquals(getKingCoords(color, board)) } != null
+    return getCaptureMoves(flipColor(color), board).find { it.contentEquals(getKingCoords(color, board)) } != null
 
 }
 

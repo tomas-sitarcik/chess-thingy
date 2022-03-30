@@ -45,7 +45,8 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Debug">
                   <items>
-                    <MenuItem mnemonicParsing="false" onAction="#testA" text="test" />
+                    <MenuItem mnemonicParsing="false" onAction="#testA" text="testA" />
+                        <MenuItem mnemonicParsing="false" onAction="#computerOpponentToggle" text="ai opponent" />
                   </items>
                 </Menu>
               </menus>
@@ -53,7 +54,7 @@
             <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
                <children>
                   <Label fx:id="roundCounter" alignment="CENTER" layoutX="20.0" layoutY="14.0" prefHeight="34.0" prefWidth="168.0" text="Round 0" AnchorPane.bottomAnchor="106.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="14.0" />
-                  <Text fx:id="infoField" layoutX="20.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for COLOR to make their move" textAlignment="CENTER" wrappingWidth="168.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="106.0" />
+                  <Text fx:id="infoField" layoutX="20.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for COLOR to make their move" textAlignment="CENTER" wrappingWidth="168.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="120.0" />
                   <Text fx:id="timer" layoutX="20.0" layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" text="timer goes here" textAlignment="CENTER" wrappingWidth="168.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
                </children>
             </AnchorPane>

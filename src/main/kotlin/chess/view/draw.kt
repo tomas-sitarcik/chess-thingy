@@ -52,14 +52,10 @@ fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceCol
 
     var gBoard = Array(8) { Array<Piece?>(8) { null } }
 
-    if (activeSide == PieceColor.WHITE) {
-        for (i in 0..7) {
-            for (j in 0..7) {
-                gBoard[j][7 - i] = board[j][i]
-            }
+    for (i in 0..7) {
+        for (j in 0..7) {
+            gBoard[j][7 - i] = board[j][i]
         }
-    } else {
-        gBoard = board
     }
 
     for (i in 0..7) {
