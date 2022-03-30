@@ -33,9 +33,9 @@
               <menus>
                 <Menu mnemonicParsing="false" text="Game">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="New" />
-                        <MenuItem mnemonicParsing="false" text="Load" />
-                        <MenuItem mnemonicParsing="false" text="Save" />
+                    <MenuItem fx:id="newGame" mnemonicParsing="false" onAction="#newGame" text="New" />
+                        <MenuItem fx:id="loadGame" mnemonicParsing="false" onAction="#loadGame" text="Load" />
+                        <MenuItem fx:id="saveGame" mnemonicParsing="false" onAction="#saveGame" text="Save" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -45,22 +45,22 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Debug">
                   <items>
-                    <MenuItem mnemonicParsing="false" onAction="#testA" text="test" />
+                    <MenuItem mnemonicParsing="false" onAction="#testA" text="testA" />
+                        <MenuItem mnemonicParsing="false" onAction="#computerOpponentToggle" text="ai opponent" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
                <children>
-                  <Label fx:id="roundCounter" alignment="CENTER" layoutX="20.0" layoutY="14.0" prefHeight="34.0" prefWidth="168.0" text="Round 1" AnchorPane.bottomAnchor="106.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="14.0" />
-                  <Label fx:id="timer" alignment="CENTER" layoutX="20.0" layoutY="60.0" prefHeight="33.0" prefWidth="127.0" text="00:00" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="60.0" />
-                  <Text fx:id="infoField" layoutX="20.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for COLOR to make their move" textAlignment="CENTER" wrappingWidth="168.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="106.0" />
+                  <Label fx:id="roundCounter" alignment="CENTER" layoutX="20.0" layoutY="14.0" prefHeight="34.0" prefWidth="168.0" text="Round 0" AnchorPane.bottomAnchor="106.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="14.0" />
+                  <Text fx:id="infoField" layoutX="20.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for COLOR to make their move" textAlignment="CENTER" wrappingWidth="168.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="120.0" />
+                  <Text fx:id="timer" layoutX="20.0" layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" text="timer goes here" textAlignment="CENTER" wrappingWidth="168.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" />
                </children>
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
                <children>
-                  <ListView fx:id="listView2" focusTraversable="false" prefHeight="310.0" prefWidth="75.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="0.0" />
-                  <ListView fx:id="listView1" focusTraversable="false" prefHeight="310.0" prefWidth="75.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="0.0" />
+                  <ListView fx:id="listView1" focusTraversable="false" layoutX="35.0" pickOnBounds="false" prefHeight="310.0" prefWidth="125.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="35.0" AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             <Button fx:id="revertButton" mnemonicParsing="false" onAction="#revertToRound" prefHeight="25.0" prefWidth="150.0" text="Revert" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />

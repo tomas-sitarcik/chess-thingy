@@ -2,6 +2,10 @@ package chess.board
 
 import java.io.File
 
+fun printBoard(board: Array<Array<Piece?>>) {
+    println(getPrintableBoard(getConsoleBoard(board)))
+}
+
 fun main(args: Array<String>) {
 
     val file = File("src/resources/MainView.fxml")
@@ -34,7 +38,7 @@ fun main(args: Array<String>) {
     }
 
     fun printMoves(position: IntArray, board: Array<Array<Piece?>>): Unit? {
-        val moves = getPossibleMoves(position, board)
+        val moves = getMoves(position, board)
         if (moves == null) {
             print("failed")
             return null
@@ -47,6 +51,7 @@ fun main(args: Array<String>) {
         println(getPrintableBoard(consBoard))
         return null
     }
+
 
     var board = initBoard()
     //board[2][5] = Piece(PieceType.ROOK, PieceColor.WHITE)
@@ -72,5 +77,7 @@ fun main(args: Array<String>) {
 
     //move(intArrayOf(3, 7), intArrayOf(3, 3), board)
     //printMoves(intArrayOf(3, 3), board)
+
+
 
 }
