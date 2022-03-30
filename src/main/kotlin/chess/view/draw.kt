@@ -15,24 +15,34 @@ import javafx.scene.text.TextAlignment
 fun getPieceImage(type: PieceType, color: PieceColor): Image {
     //TODO add the actual piece images and their license (LOL)
 
+    var pathString = ""
+
+    /** makes sure the piece images are accessible when running in IDE and when running compiled **/
+    pathString =
+    if (Image("file:src/main/resources/images/pieces/black_king.png").isError) {
+        "file:pieces/"
+    } else {
+        "file:src/main/resources/images/pieces/"
+    }
+
     return when (color) {
 
         PieceColor.BLACK -> when (type) {
-            PieceType.KING -> Image("file:src/resources/images/pieces/black_king.png")
-            PieceType.QUEEN -> Image("file:src/resources/images/pieces/black_queen.png")
-            PieceType.ROOK -> Image("file:src/resources/images/pieces/black_rook.png")
-            PieceType.KNIGHT -> Image("file:src/resources/images/pieces/black_knight.png")
-            PieceType.BISHOP -> Image("file:src/resources/images/pieces/black_bishop.png")
-            PieceType.PAWN -> Image("file:src/resources/images/pieces/black_pawn.png")
+            PieceType.KING -> Image("${pathString}black_king.png")
+            PieceType.QUEEN -> Image("${pathString}black_queen.png")
+            PieceType.ROOK -> Image("${pathString}black_rook.png")
+            PieceType.KNIGHT -> Image("${pathString}black_knight.png")
+            PieceType.BISHOP -> Image("${pathString}black_bishop.png")
+            PieceType.PAWN -> Image("${pathString}black_pawn.png")
         }
 
         PieceColor.WHITE -> when (type) {
-            PieceType.KING -> Image("file:src/resources/images/pieces/white_king.png")
-            PieceType.QUEEN -> Image("file:src/resources/images/pieces/white_queen.png")
-            PieceType.ROOK -> Image("file:src/resources/images/pieces/white_rook.png")
-            PieceType.KNIGHT -> Image("file:src/resources/images/pieces/white_knight.png")
-            PieceType.BISHOP -> Image("file:src/resources/images/pieces/white_bishop.png")
-            PieceType.PAWN -> Image("file:src/resources/images/pieces/white_pawn.png")
+            PieceType.KING -> Image("${pathString}white_king.png")
+            PieceType.QUEEN -> Image("${pathString}white_queen.png")
+            PieceType.ROOK -> Image("${pathString}white_rook.png")
+            PieceType.KNIGHT -> Image("${pathString}white_knight.png")
+            PieceType.BISHOP -> Image("${pathString}white_bishop.png")
+            PieceType.PAWN -> Image("${pathString}white_pawn.png")
         }
     }
 }

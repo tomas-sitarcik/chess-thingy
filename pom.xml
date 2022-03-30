@@ -55,12 +55,20 @@
 
         <resources>
             <resource>
-                <directory>src/resources</directory>
+                <directory>src/main/resources</directory>
                 <includes>
                     <include>**/*.fxml</include>
-                    <include>**/*.properties</include>
+                    <include>**/*.png</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources/images/pieces</directory>
+                <includes>
+                    <include>**/*.fxml</include>
+                    <include>**/*.png</include>
+                </includes>
+            </resource>
+
         </resources>
 
         <plugins>
@@ -81,7 +89,8 @@
                             <jrePath>C:\Program Files\Java\jre1.8.0_291</jrePath>
 
                             <additionalResources>
-                                <additionalResource>src/resources</additionalResource>
+                                <additionalResource>src/main/resources/images/pieces</additionalResource>
+                                <additionalResource>C:\Users\tsiti\Documents\shitgrub\chess-thingy\src\main\resources\images\pieces</additionalResource>
                             </additionalResources>
 
                         </configuration>
