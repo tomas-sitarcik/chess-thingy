@@ -78,7 +78,7 @@
                         <configuration>
                             <mainClass>chess.app.MyApp</mainClass>
                             <bundleJre>true</bundleJre>
-                            <jrePath>C:\Program Files\Java\jdk1.8.0_291\jre</jrePath>
+                            <jrePath>C:\Program Files\Java\jre1.8.0_291</jrePath>
 
                             <additionalResources>
                                 <additionalResource>src/resources</additionalResource>
@@ -115,5 +115,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>corp1</id>
+            <name>Corporate Repository</name>
+            <url>file://C:/Users/tsiti/IdeaProjects/chess-thingy/target</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>
 
 </project>
