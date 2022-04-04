@@ -15,9 +15,10 @@ import javafx.scene.text.TextAlignment
 fun getPieceImage(type: PieceType, color: PieceColor): Image {
     //TODO add the actual piece images and their license (LOL)
 
-    var pathString = ""
+    val pathString: String
 
-    /** makes sure the piece images are accessible when running in IDE and when running compiled **/
+    /** makes sure the piece images are accessible when running in IDE and when running deployed **/
+
     pathString =
     if (Image("file:src/main/resources/images/pieces/black_king.png").isError) {
         "file:pieces/"
@@ -50,9 +51,9 @@ fun getPieceImage(type: PieceType, color: PieceColor): Image {
 fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceColor, boardMargin: Double) {
 
     /** draws the pieces onto the board, according to the given board, and other properties this is a quite
-     *  expensive function - computationally which is why resizing of the board is handled through scaling **/
+     *  expensive function which is why resizing of the board is handled through scaling **/
 
-    var squareSize = (canvas.width - canvas.width * boardMargin * 2) / 8
+    val squareSize = (canvas.width - canvas.width * boardMargin * 2) / 8
     val origin = canvas.width * boardMargin
     val gCon = canvas.graphicsContext2D
 
@@ -60,7 +61,7 @@ fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceCol
 
     /** modifies the board depending on the active side **/
 
-    var gBoard = Array(8) { Array<Piece?>(8) { null } }
+    val gBoard = Array(8) { Array<Piece?>(8) { null } }
 
     for (i in 0..7) {
         for (j in 0..7) {
@@ -71,7 +72,7 @@ fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceCol
     for (i in 0..7) {
         for (j in 0..7) {
             if (gBoard[j][i] != null) {
-                var temp = gBoard[j][i]
+                val temp = gBoard[j][i]
                 if (temp != null) {
                     gCon.drawImage(getPieceImage(temp.type, temp.color),
                                                 origin + (j * squareSize),
@@ -89,7 +90,7 @@ fun drawPieces(board: Array<Array<Piece?>>, canvas: Canvas, activeSide: PieceCol
 fun drawBoardBackground(canvas: Canvas, fillA: Color, fillB: Color, boardMargin: Double ) {
 
     val squareSize = (canvas.width - (canvas.width * boardMargin * 2)) / 8
-    var margin = canvas.width * boardMargin
+    val margin = canvas.width * boardMargin
     val gCon = canvas.graphicsContext2D
 
     /** draw the board **/
@@ -118,7 +119,7 @@ fun drawBoardBackground(canvas: Canvas, fillA: Color, fillB: Color, boardMargin:
 
     val columnLetters = arrayOf("A", "B", "C", "D", "E", "F", "G", "H")
     val rowNumbers = arrayOf("1", "2", "3", "4", "5", "6", "7", "8") // in case i decide to actually flip the row numbers
-    gCon.fill = Color.BLACK
+    gCon.fill = BLACK
 
     gCon.textAlign = TextAlignment.CENTER
     gCon.font = Font(margin * 0.85)

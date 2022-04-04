@@ -50,7 +50,6 @@ fun kingMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArr
         moves.add(intArrayOf(x - 1, y))
     }
 
-
     if (diagonalDistances[0] > 0) { // top right
         moves.add(intArrayOf(x + 1, y - 1))
     }
