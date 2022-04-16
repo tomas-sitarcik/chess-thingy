@@ -155,7 +155,10 @@ fun highlightSquare(canvas: Canvas, coords: IntArray, squareSize: Double, boardM
                 squareSize + highlightWidth * 2,
                 squareSize + highlightWidth * 2)
 
-        gCon.clearRect(origin + (coords[0] * squareSize), origin + (coords[1] * squareSize), squareSize, squareSize)
+        gCon.clearRect(origin + (coords[0] * squareSize),
+                       origin + (coords[1] * squareSize),
+                        squareSize,
+                        squareSize)
     }
 }
 

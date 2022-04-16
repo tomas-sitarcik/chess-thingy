@@ -20,8 +20,8 @@ import java.lang.StringBuilder
 
 
 
-/** works kinda funky but allows more intuitive access of the pieces with board[x][y] as opposed to having
-to use board[y][x] there is probably a better, more elegant way to do this... TOO BAD! **/
+/** works kinda weird but allows more intuitive access of the pieces with board[x][y] as opposed to having
+to use board[y][x] **/
 
 fun initBoard(): Array<Array<Piece?>> {
     val board = Array(8) { Array<Piece?>(8) { null } }
@@ -57,19 +57,6 @@ fun initBoard(): Array<Array<Piece?>> {
     return board
 }
 
-fun getCopyOfBoard(board: Array<Array<Piece?>>): Array<Array<Piece?>> {
-    /** get a non-linked copy of a board for storage and other operations **/
-    val newBoard = Array(8) { Array<Piece?>(8) { null } }
-
-    for (i in 0..7) {
-        for (j in 0..7) {
-            newBoard[i][j] = board[i][j]
-        }
-    }
-
-    return newBoard
-}
-
 fun getPiece(position: IntArray, board: Array<Array<Piece?>>): Piece? {
     return board[position[0]][position[1]]
 }
@@ -84,7 +71,20 @@ fun move(position: IntArray, destination: IntArray, board: Array<Array<Piece?>>)
     setPiece(position, null, board)
 }
 
-/** legacy functions (kinda) **/
+fun getCopyOfBoard(board: Array<Array<Piece?>>): Array<Array<Piece?>> {
+    /** get a non-linked copy of a board for storage and other operations **/
+    val newBoard = Array(8) { Array<Piece?>(8) { null } }
+
+    for (i in 0..7) {
+        for (j in 0..7) {
+            newBoard[i][j] = board[i][j]
+        }
+    }
+
+    return newBoard
+}
+
+/** console mode functions **/
 
 fun getPrintableBoard(consoleBoard: Array<Array<String>>): String {
     val printableBoard = StringBuilder()

@@ -143,7 +143,6 @@ fun rookMoves(position: IntArray, board: Array<Array<Piece?>>): Array<out IntArr
     return getCardinalMoves(position, board)
 }
 
-
 fun pawnMoves(position: IntArray, board: Array<Array<Piece?>>, color: PieceColor): Array<out IntArray>? {
 
     /** provides the possible moves - en passant moves excluded **/

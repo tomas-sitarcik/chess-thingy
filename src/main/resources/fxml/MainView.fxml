@@ -38,9 +38,9 @@
                         <MenuItem fx:id="saveGame" mnemonicParsing="false" onAction="#saveGame" text="Save" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
+                <Menu mnemonicParsing="false" text="sound">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
+                    <MenuItem mnemonicParsing="false" onAction="#toggleSound" text="toggle" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Debug">

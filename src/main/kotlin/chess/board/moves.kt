@@ -158,7 +158,7 @@ fun getSafeKingMoves(kingPosition: IntArray, boardInput: Array<Array<Piece?>>): 
     val kingMovesCopy = getPossibleMoves(kingPosition, board)
     var allOpponentMoves: ArrayList<IntArray>? = null
     var possibleMoves: ArrayList<IntArray>? = null
-    var illegalMoves: ArrayList<IntArray>? = null
+    var illegalMoves: ArrayList<IntArray>?
 
     board[kingPosition[0]][kingPosition[1]] = null
 

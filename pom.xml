@@ -53,6 +53,11 @@
             <artifactId>controlsfx</artifactId>
             <version>8.40.11</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>1.4.3</version>
+        </dependency>
     </dependencies>
 
     <build>
