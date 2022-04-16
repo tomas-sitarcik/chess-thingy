@@ -100,7 +100,9 @@
 
                             <additionalResources>
                                 <additionalResource>src/main/resources/images/pieces</additionalResource>
+                                <additionalResource>src/main/resources/sound</additionalResource>
                                 <additionalResource>C:\Users\tsiti\Documents\shitgrub\chess-thingy\src\main\resources\images\pieces</additionalResource>
+                                <additionalResource>C:\Users\tsiti\Documents\shitgrub\chess-thingy\src\main\resources\sound</additionalResource>
                             </additionalResources>
 
                         </configuration>
